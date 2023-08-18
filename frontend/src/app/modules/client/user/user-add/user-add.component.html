@@ -1,0 +1,92 @@
+<h4 class="page_title">New User</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView [(activeIndex)]="tabIndex">
+    <p-tabPanel header="User Detail">
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask1" name="username" [(ngModel)]="username" (change)="handleChange($event)"/>
+            <label for="inputmask1">Username</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask2" name="email" [(ngModel)]="email" (change)="handleChange($event)"/>
+            <label for="inputmask2">Email</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask3" name="firstName" [(ngModel)]="firstName" (change)="handleChange($event)"/>
+            <label for="inputmask3">First Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask4" name="lastName" [(ngModel)]="lastName" (change)="handleChange($event)"/>
+            <label for="inputmask4">Last Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown1"  [options]="tzs" [filter]="true"  placeholder="Timezone not selected" (onChange)="onTimezoneChange($event)" [autoDisplayFirst]="false" optionLabel="text"></p-dropdown>
+            <label for="dropdown1">Timezone</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown2" [options]="languages" placeholder="Language not selected" (onChange)="onLanguageChange($event)" [autoDisplayFirst]="false" optionLabel="name"></p-dropdown>
+            <label for="dropdown2">Language</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown5" [options]="timeFormats" placeholder="Date Format" (onChange)="onDateChange($event)" [autoDisplayFirst]="true" optionLabel="label"></p-dropdown>
+            <label for="dropdown5">Date Format</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown7" [options]="weekendFormats" placeholder="Date Format" (onChange)="onWeekendChange($event)" [autoDisplayFirst]="true" optionLabel="label"></p-dropdown>
+            <label for="dropdown7">Weekend Format</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Assign Role" (click)="tabIndex = 1"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Assign Role">
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown11" [(ngModel)]="selectedCustomer" [options]="customers" (onChange)="onCustomerSelect($event.value.id)" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+            <label for="dropdown11">Customer</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-dropdown id="dropdown12" placeholder="Role not selected" [options]="showRoles" (onChange)="onRoleChange($event.value.id)" [autoDisplayFirst]="false" optionLabel="name"></p-dropdown>
+            <label for="dropdown12">Role</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+          <button pButton pRipple label="User Details" (click)="tabIndex = 0"></button>
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Create User" (click)="createUser()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

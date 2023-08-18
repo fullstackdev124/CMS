@@ -1,0 +1,322 @@
+<div class="fixed-position" id="top_fixed_panel">
+  <h4 class="page_title">Call Logs <i>{{activityReportTitle}}</i></h4>
+  <button *ngIf="isFromActivityReport || isFromOverviewReport" pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" icon="pi pi-chevron-left" label="Back" (click)="goBack()"></button>
+
+  <div class="card">
+    <div class="grid">
+      <div class="col-12 flex justify-content-start {{isCalendar1Showing ? 'disable_event_control' : ''}}">
+        <!--      <p-toggleButton [(ngModel)]="filterPanelOpened" class="mr-2" onLabel="Filter" offLabel="Filter"-->
+        <!--                      onIcon="pi pi-filter-fill" offIcon="pi pi-filter"></p-toggleButton>-->
+
+        <span class="p-float-label mr-4">
+        <p-calendar
+          #calendar
+          [locale]="datePickerLocale"
+          selectionMode="range"
+          [readonlyInput]="true"
+          [(ngModel)]="selectedDate"
+          [dateFormat]="datePickerFormat"
+          [showIcon]="true"
+          [numberOfMonths]="2"
+          styleClass="date_range"
+          panelStyleClass="date_range_panel"
+          (onShow)="onShowDateRangePicker($event)"
+          (onClose)="onCloseDateRangePicker($event)"
+        >
+            <ng-template pTemplate="header">
+                <div class="calendar-header pt-3 pr-5 pl-2">
+                    <button pButton pRipple type="button" (click)="onClickToday()" label="Today" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                    <button pButton pRipple type="button" (click)="onClickYesterday()" label="Yesterday" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                    <button pButton pRipple type="button" (click)="onClickThisWeek()" label="This Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                    <button pButton pRipple type="button" (click)="onClickLastWeek()" label="Last Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                    <button pButton pRipple type="button" (click)="onClickThisMonth()" label="This Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                    <button pButton pRipple type="button" (click)="onClickLastMonth()" label="Last Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickApply()" label="Apply" class="mt-2 p-button-sm p-button-raised p-button-primary w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickCancel()" label="Cancel" class="p-button-sm p-button-raised p-button-warning w-full mb-2"></button>
+                </div>
+            </ng-template>
+        </p-calendar>
+        <label>Date Range</label>
+      </span>
+
+        <div class="flex {{isCalendar1Showing ? 'disable_event_area' : ''}}">
+          <p-checkbox [(ngModel)]="isAutoLoading" [binary]="true" label="Auto Load" [disabled]="this.filterDateMode != 'Today'"></p-checkbox>
+          <p-checkbox class="ml-4" [(ngModel)]="includeZeroDuration" [binary]="true" label="Display 0 Duration Calls" (onChange)="onSearch($event)"></p-checkbox>
+        </div>
+      </div>
+      <div class="col-12 md:col-2 p-fluid field {{isCalendar1Showing ? 'disable_event_area' : ''}}" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+        <span class="p-float-label">
+            <p-dropdown id="dropdown1" [(ngModel)]="filteredCustomer" [options]="customerList" [autoDisplayFirst]="true" optionLabel="companyName"></p-dropdown>
+            <label for="dropdown1">Customer</label>
+        </span>
+      </div>
+      <div class="col-12 {{store.getUserType() == cmsUserType.superAdmin ? 'md:col-4' : 'md:col-6'}} {{isCalendar1Showing ? 'disable_event_area' : ''}}">
+        <div class="p-inputgroup mr-2">
+          <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue"
+                 (keyup.enter)="onSearch($event)"/>
+          <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="onSearch($event)"></button>
+        </div>
+      </div>
+      <div class="col-12 md:col-6 text-right flex justify-content-end align-items-baseline {{isCalendar1Showing ? 'disable_event_area' : ''}}">
+        <span class="mr-3 mt-3" *ngIf="totalRecords!=-1"><b>{{totalRecords}}</b> Call Log<span *ngIf="totalRecords>1">s</span></span>
+        <button pButton pRipple label="Export" class="p-button-secondary" icon="pi pi-cloud-download"
+                (click)="isLoading || isExporting ? '' : onExport()">
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card fixed-margin {{isCalendar1Showing ? 'disable_event_area' : ''}}">
+  <div class="grid">
+    <p-table [value]="logs" responsiveLayout="stack" responsive="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th *ngIf="permission==permissionTypeAll" style="width: 92px;"><i class="fa fa-reply"></i></th>
+          <th [ngClass]="sortActive === 'callerNumber' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'"><a
+            (click)="onSortChange('callerNumber')"><i class="fa fa-user"></i>&nbsp;&nbsp;Contact</a></th>
+          <th><i class="fa fa-database"></i>&nbsp;&nbsp;Source</th>
+          <th><i class="fa fa-random"></i>&nbsp;&nbsp;Routing</th>
+          <th><i class="fa fa-play-circle"></i>&nbsp;&nbsp;Audio</th>
+          <th [ngClass]="sortActive === 'metrics' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'"><a
+            (click)="onSortChange('metrics')"><i class="fa fa-server"></i>&nbsp;&nbsp;Metrics</a></th>
+          <th *ngIf="permission==permissionTypeAll" style="width: 132px;"><i class="fa fa-bolt"></i>&nbsp;&nbsp;Actions</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-log let-rowIndex="i" >
+        <tr>
+          <!------------------------------------------- Call/Edit Cell ------------------------------------->
+          <td *ngIf="!log.isCollapse" [hidden]="permission==permissionTypeReadOnly">
+            <button pButton label="Call" icon="pi pi-phone" class="p-button-text p-button-success"></button>
+            <button (click)="onEditPanelCollapse(getRowIndex(log), 'contact')" pButton label="{{onEditing && editIndex === getRowIndex(log) ? 'Close' : 'Edit'}}" icon="pi pi-user-edit" class="p-button-text p-button-danger"></button>
+          </td>
+
+          <!------------------------------------------- Contact Cell ------------------------------------->
+          <td *ngIf="!log.isCollapse">
+            <span class="p-column-title">Contact</span>
+            <h5>
+              <a class="search callerid" *ngIf="log.Phonebook?.name" (click)="onClickItem('Phonebook.name', log.Phonebook?.name)">{{log.Phonebook?.name}}</a>
+              <div class="callerid" *ngIf="!log.Phonebook?.name">Not Provided</div>
+            </h5>
+            <h6>
+              <a class="search call_caller_number" (click)="onClickItem('callerNumber', log.callerNumber)">{{log.callerNumber !== 'anonymous' && log.callerNumber| fixed | mask: '(000) 000-0000'}}</a>
+            </h6>
+            <p>
+              <a class="search location" *ngIf="log.Phonebook?.city" (click)="onClickItem('Phonebook.city', log.Phonebook?.city)">{{log.Phonebook?.city}}</a>
+              <a class="search location" *ngIf="log.Phonebook?.state" (click)="onClickItem('Phonebook.state', log.Phonebook?.state)">{{log.Phonebook?.state}}</a>&nbsp;
+              <a class="search location" *ngIf="log.Phonebook?.country" (click)="onClickItem('Phonebook.country', log.Phonebook?.country)">{{log.Phonebook?.country}}</a>
+              <span *ngIf="!log.Phonebook?.city && !log.Phonebook?.state && !log.Phonebook?.country">No Location</span>
+            </p>
+          </td>
+
+          <!------------------------------------------- Source Cell ------------------------------------->
+          <td *ngIf="!log.isCollapse">
+            <span class="p-column-title">Source</span>
+            <h6>
+              <a class="search" *ngIf="log.OpNumber?.TrackingSources?.name"
+                 (click)="onClickItem('OpNumber.TrackingSources.name', log.OpNumber?.TrackingSources?.name)">
+                <i class="fa fa-newspaper-o size-md"></i> {{log.OpNumber?.TrackingSources?.name}}
+              </a>
+              <span *ngIf="!log.OpNumber?.TrackingSources?.name">No Source</span>
+            </h6>
+            <h6>
+              <a class="search" (click)="onClickItem('trackingNumber', log.OpNumber?.tracking_number)">
+                {{log.OpNumber?.tracking_number | fixed | mask: '(000) 000-0000'}}
+              </a>
+            </h6>
+          </td>
+
+          <!------------------------------------------- Routing Cell ------------------------------------->
+          <td *ngIf="!log.isCollapse">
+            <span class="p-column-title">Routing</span>
+<!--            <h6 *ngIf="log.OpNumber?.routingAction && (log.OpNumber?.sipGateway_address)">-->
+<!--              <a class="search"-->
+<!--                 (click)="onClickItem('OpNumber.SipGateways.address', log.OpNumber?.sipGateway_address)">Forward to {{log.OpNumber?.sipGateway_address}}</a>-->
+<!--            </h6>-->
+            <h6 *ngIf="log.OpNumber?.routing_action">
+              <a class="search" *ngIf="log.OpNumber?.routing_action === 'REMAP_FORWARD_TO'"
+                 (click)="onClickItem('OpNumber.ReceivingNumber.number', log.OpNumber?.ReceivingNumber?.number)">Remap with {{log.OpNumber?.ReceivingNumber?.number | fixed | mask: '(000) 000-0000'}}</a>
+              <span *ngIf="log.OpNumber?.routing_action=='FORWARD_TO'">Forward</span>
+              <span *ngIf="log.OpNumber?.routing_action=='DIAL_AGENT'">Dial Agent</span>
+              <span *ngIf="log.OpNumber?.routing_action=='HANG_UP'">Hang Up</span>
+            </h6>
+            <h6>
+              <span *ngIf="!log.OpNumber?.routing_action">No Routing</span>
+            </h6>
+          </td>
+
+          <!------------------------------------------- Audio Cell ------------------------------------->
+          <td  *ngIf="!log.isCollapse">
+            <span class="p-column-title">Audio</span>
+            <div class="audio-wrapper action">
+              <a (click)="onPlayAudio(log.id, true)" *ngIf="log.callrecordingId && (!isPlay || log.id !== playId)">
+                <i class="fa fa-play size-md" style="font-size: 20px;"></i>
+                <p class="text color-blue">audio</p>
+              </a>
+              <p *ngIf="!log.callrecordingId" style="margin-bottom: 2px">No Audio</p>
+              <div style="margin-bottom: -5px;">
+                <audio controls="controls" autoplay="autoplay"
+                       style="height: 15px; margin-bottom: 10px; margin-left: -2px" *ngIf="isPlay && log.id === playId">
+                  <source [src]="content">
+                </audio>
+                <a *ngIf="isPlay && log.id === playId" style="display: block;margin-top: -20px;"
+                   (click)="onPlayAudio(log.id, false)"><span style="font-size: 20px;color: red">x</span></a>
+              </div>
+              <span class="duration">{{(log.duration / 60) | round | number: '2.0-0'}}:{{(log.duration) % 60 | number: '2.0-0'}}</span>
+            </div>
+          </td>
+
+          <!------------------------------------------- Metrics Cell ------------------------------------->
+          <td *ngIf="!log.isCollapse">
+            <span class="p-column-title">Metrics</span>
+            <div class="source-detail">
+              <div class="source-info activity-date">
+                <span>
+                  <i class="pi pi-calendar"></i>&nbsp;
+                  {{ getDateStringOfCallRecord(log.created) }}
+                </span>
+              </div>
+              <div class="source-info activity-time">
+                <span>
+                  <i class="pi pi-clock"></i>&nbsp;
+                  {{ getTimeStringOfCallRecord(log.created) }}
+                </span>
+              </div>
+              <div class="source-info activity-status" *ngIf="log.metrics && log.metrics.split('\n')[1]">
+                  <span>
+                    <i class="pi pi-phone"></i>
+                    {{ log.metrics && log.metrics.split('\n')[1] }}
+                  </span>
+              </div>
+              <div class="source-info activity-transfer" *ngIf="log.metrics && log.metrics.split('\n')[2]">
+                <span>
+                  <i class="pi pi-info-circle"></i>
+                  {{ log.metrics && log.metrics.split('\n')[2] }}
+                </span>
+              </div>
+            </div>
+          </td>
+
+          <!------------------------------------------- Action Cell ------------------------------------->
+          <td *ngIf="!log.isCollapse" [hidden]="permission==permissionTypeReadOnly">
+            <span class="p-column-title">Actions</span>
+            <button (click)="onEditPanelCollapseForEmail(getRowIndex(log))" pButton label="{{onEditing && editIndex === getRowIndex(log) ? 'Close' : 'Email'}}" icon="pi pi-reply" class="p-button-text p-button-success"></button>
+            <button [disabled]="isInBlacklist(log)==0" pButton label="{{isInBlacklist(log)==2 ? 'Unmark Spam' : (isInBlacklist(log)==0 ? 'Blocked by Administrator' : 'Mark Spam') }}" icon="pi pi-flag" (click)="confirmSpam(log)" class="p-button-text p-button-danger p_spam_button"></button>
+          </td>
+
+          <!------------------------------------------- Edit Panel ------------------------------------->
+          <td *ngIf="log.isCollapse" colspan="7" class="p-0 edit-panel p-4">
+              <h5 class="mb-3">Caller ID: {{log?.callId}}</h5>
+            <div class="p-fluid grid p-2" *ngIf="editingPanelIndex==2">
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext12" pInputText name="name" [value]="phonebook?.name" (change)="onChangePhonebook($event)">
+                    <label for="inputtext12">Name</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="email" id="inputtext11" pInputText name="email" [value]="phonebook?.email" (change)="onChangePhonebook($event)">
+                    <label for="inputtext11">Email Address</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext13" pInputText name="contact_number" [value]="phonebook?.contact_number" (change)="onChangePhonebook($event)">
+                    <label for="inputtext13">Contact Number</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext14" pInputText name="street" [value]="phonebook?.street" (change)="onChangePhonebook($event)">
+                    <label for="inputtext14">Street</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext15" pInputText name="city" [value]="phonebook?.city" (change)="onChangePhonebook($event)">
+                    <label for="inputtext15">City</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext16" pInputText name="state" [value]="phonebook?.state" (change)="onChangePhonebook($event)">
+                    <label for="inputtext16">State</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext17" pInputText name="country" [value]="phonebook?.country" (change)="onChangePhonebook($event)">
+                    <label for="inputtext17">Country</label>
+                  </span>
+              </div>
+
+              <div class="field col-12 md:col-4">
+                  <span class="p-float-label">
+                    <input type="text" id="inputtext18" pInputText name="postalCode" [value]="phonebook?.postalCode" (change)="onChangePhonebook($event)">
+                    <label for="inputtext18">Postal Code</label>
+                  </span>
+              </div>
+
+              <div class="field col-12">
+                  <span class="p-float-label">
+                    <textarea id="textarea111" rows="3" style="resize: none;" name="note" cols="30" pInputTextarea [(ngModel)]="emailPanelContent" (change)="onChangePhonebook($event)"></textarea>
+                    <label for="textarea111">Note</label>
+                  </span>
+              </div>
+
+              <div class="field col-6">
+                <button pButton pRipple label="Save Changes" (click)="onSaveChange(false)"></button>
+              </div>
+              <div class="field col-6">
+                <button pButton pRipple class="p-button-danger" label="Save & Close" (click)="onSaveChange(true)"></button>
+              </div>
+            </div>
+
+            <div class="p-fluid grid p-2 md:col-6" *ngIf="editingPanelIndex==1">
+                <div class="field col-12 md:col-6">
+                  <span class="p-float-label">
+                    <input type="email" id="inputtext1" pInputText [(ngModel)]="emailPanelAddress">
+                    <label for="inputtext1">Email Address</label>
+                  </span>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                  <span class="p-float-label">
+                    <input type="email" id="inputtext2" pInputText [(ngModel)]="emailPanelSubject">
+                    <label for="inputtext2">Subject</label>
+                  </span>
+                </div>
+
+                <div class="field col-12">
+                  <span class="p-float-label">
+                    <textarea id="textarea11" rows="3" style="resize: none;" cols="30" pInputTextarea [(ngModel)]="emailPanelContent"></textarea>
+                    <label for="textarea11">Content</label>
+                  </span>
+                </div>
+
+                <div class="field col-12">
+                  <p-checkbox label="Include Call Record" [(ngModel)]="emailPanelIncludeCallRecord"></p-checkbox>
+                  <p>Optionally include a link of call details with the email including a recording if enabled.</p>
+                </div>
+
+                <div class="col-12 text-right">
+                  <button pButton pRipple label="Send Email" [disabled]="emailPanelSubject=='' || emailPanelAddress=='' || emailPanelContent==''" (click)="sendEmail()"></button>
+                </div>
+              </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+  <div class="grid">
+    <!--    <p-paginator [rows]="pageSize" [totalRecords]="totalCount" (onPageChange)="paginate($event)"></p-paginator>-->
+  </div>
+</div>
+<p-confirmDialog [style]="{width: '50vw'}" key="overallDialog" [baseZIndex]="10000"></p-confirmDialog>

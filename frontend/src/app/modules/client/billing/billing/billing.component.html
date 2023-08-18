@@ -1,0 +1,351 @@
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="grid mt-3 section-body">
+  <div class="col-12">
+    <div class="card mb-1">
+      <div class="card-body">
+
+        <p-tabView orientation="left" >
+          <p-tabPanel header="Subscription" class="line-height-3">
+            <div *ngIf="isAdmin">
+              <p-table #pmt [value]="products" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="false"
+                           [globalFilterFields]="['number']" [(selection)]="selectedProduct" [rowHover]="true"
+                           [showCurrentPageReport]="true">
+                    <ng-template pTemplate="header" class="grid">
+                      <tr>
+                        <th class="">Product</th>
+                        <th class="w-11rem"></th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-product class="">
+                      <tr>
+                        <td class="">
+                          <div *ngIf="product.id > 0">
+                            <b>{{product.name}}</b>
+                          </div>
+
+                          <div *ngIf="curEditingId != product.id" class="grid">
+                            <div class="col-12 xl:col-6 lg:col-6 md:col-6" *ngIf="product.id > 0">
+                              <div><i>Description:</i> {{product.description}}</div>
+                              <div><i>Sku:</i> {{product.sku}}</div>
+                              <div><i>Group:</i> {{product.group}}</div>
+                              <div><i>Id:</i> {{product.id}}</div>
+                            </div>
+                            <div class="col-12 xl:col-6 lg:col-6 md:col-6" *ngIf="product.id > 0">
+                              <div class="field" *ngFor="let variation of product.Variations" id="prodRowVar_{{product.id}}_{{variation.id}}">
+                                <div><i>Price:</i> {{variation.price}}</div>
+                                <div><i>Recur:</i> {{variation.recur}}</div>
+                                <div><i>Max qt:</i> {{variation.maxQuantity}}</div>
+                              </div>
+                            </div>
+                          </div>
+                          <div *ngIf="curEditingId == product.id" class="grid">
+                            <div *ngIf="product.id === 0" class="col-12"><b class="addnewproduct">Add new product</b><br></div>
+                            <div *ngIf="product.id > 0" class="col-12" style="padding-left: 2rem;"><i>Id: {{product.id}}</i></div>
+                            <div class="col-12 md:col-6 editing_product_panel">
+                              <h6>Product:</h6>
+                              <form class="" [formGroup]="getProductForms(product.id)">
+                                <div class="grid mt-2">
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <input type="text" class="" id="inputtext1" pInputText value="{{product.description}}" name="description" formControlName="description">
+                                      <label for="inputtext1">Description</label>
+                                    </span>
+                                    <p *ngIf="hasFieldError(product.id, 'description')" class="p-error">Description is required</p>
+                                  </div>
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                    <input type="text" id="inputtext2" pInputText value="{{product.name}}"  formControlName="name">
+                                      <label for="inputtext2">Name</label>
+                                    </span>
+                                    <p *ngIf="hasFieldError(product.id, 'name')" class="p-error">Name is required</p>
+                                  </div>
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <input type="text" id="inputtext3" pInputText value="{{product.sku}}"  formControlName="sku">
+                                      <label for="inputtext3">Sku</label>
+                                    </span>
+                                    <p *ngIf="hasFieldError(product.id, 'sku')" class="p-error">Sku is required</p>
+                                  </div>
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <p-dropdown class="p-component-full" [options]="groups" [(ngModel)]="selectedGroup" id="dropdown1" formControlName="group" name="group" [autoDisplayFirst]="true"></p-dropdown>
+                                      <label for="dropdown1">Group</label>
+                                    </span>
+<!--                                      <p *ngIf="hasFieldError(product.id, 'group')" class="p-error">Group is required</p>-->
+                                  </div>
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <p-dropdown class="p-component-full" id="dropdown2" [options]="priceDiscounts" [(ngModel)]="selectedPriceDiscount" formControlName="discountId" name="discountId"></p-dropdown>
+                                      <label for="dropdown2">Discount</label>
+                                    </span>
+                                    <p *ngIf="hasFieldError(product.id, 'discountId')" class="p-error">Discount is required</p>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+
+                            <div class="col-12 md:col-6 editing_product_panel">
+                              <h6>Variations:</h6>
+                              <div class="grid" style="width: 100%" *ngFor="let variation of product.ProductVariations" id="prodRowVarEdit_{{product.id}}_{{variation.id}}">
+                                <form class="" style="width: 100%" [formGroup]="getProductFormsVars(variation.id)">
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <input type="text" pInputText id="inputtext4" name="price" value="{{variation.price}}"  formControlName="price">
+                                      <label for="inputtext4">Price</label>
+                                    </span>
+                                    <p *ngIf="hasFieldErrorVar(variation.id, 'price')" class="p-error">Price is required</p>
+                                  </div>
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <p-dropdown class="p-component-full" id="dropdown4" [options]="recurs" [(ngModel)]="variation.recur" formControlName="recur" name="recur"></p-dropdown>
+                                      <label for="dropdown4">Recur</label>
+                                    </span>
+                                    <p *ngIf="hasFieldErrorVar(variation.id, 'recur')" class="p-error">Recur is required</p>
+                                  </div>
+                                  <div class="field">
+                                    <span class="p-float-label">
+                                      <input type="number" id="inputtext5" pInputText name="maxQuantity" value="{{variation.maxQuantity}}"  formControlName="maxQuantity">
+                                      <label for="inputtext5">Max Quantity</label>
+                                    </span>
+                                    <p *ngIf="hasFieldErrorVar(variation.id, 'maxQuantity')" class="p-error">Max Quantity is required</p>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="">
+                          <button pButton pRipple *ngIf="curEditingId != product.id && product.id>0" label="Edit" class="w-full mr-2 mb-2" (click)="openRowProduct(product.id)"></button>
+                          <button pButton pRipple label="Close" *ngIf="curEditingId == product.id" class="w-full mr-2 mb-2" (click)="openRowProduct(-1)"></button>
+                          <button pButton pRipple *ngIf="curEditingId == product.id" label="Save" class="w-full mr-2 mb-2" (click)="saveRowProduct(product.id)"></button>
+                          <buttton *ngIf="!isEditingNewProduct && product.id === 0" pButton label="Add New Product" class="w-full mt-3 mr-2" (click)="openRowProduct(product.id)"></buttton>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+            </div>
+
+            <div *ngIf="!isAdmin">
+              <p-table #pmt [value]="products" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="false"
+                       [globalFilterFields]="['number']" [(selection)]="selectedProduct" [rowHover]="true">
+                <ng-template pTemplate="header" class="grid">
+                  <tr>
+                    <th class="col-12">Subscriptions</th>
+                    <th class=""></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product class="grid">
+                  <tr>
+                    <td class="" *ngIf="product.id > 0 && product.group=='plans'">
+                      <div *ngIf="product.id > 0">
+                        <b>{{product.name}}</b>
+                      </div>
+                      <div class="grid justify-content-between">
+                        <div class="col-8">
+                          <div><b>Sku: </b> <span class="text-400">{{product.sku}}</span></div>
+                          <div><b>Description: </b> <span class="text-400">{{product.description}}</span></div>
+                        </div>
+                        <div class="grid xl:col-4 lg:col-4 md:col-12 sm:col-12  justify-content-end" *ngIf="product.id > 0">
+                          <div class="xl:col-6 lg:col-6 md:col-6 sm:col-12" *ngFor="let variation of product.ProductVariations">
+                            <div><i>Price: </i> <span class="text-400">${{variation.price}}</span></div>
+                            <div><i>Recur: </i> <span class="text-400">{{variation.recur}}</span></div>
+                            <!--<li><i>Qt:</i><input type="number" name="maxQuantity" value="1" class="form-control qtBuy" id="prodVar_qt_{{variation.id}}" step="1" max="{{variation.maxQuantity}}" min="1"></li>-->
+                            <br>
+                            <p-button *ngIf="hasProductSubscription(variation.id)"  class="mr-1 mt-2" label="Unsubscribe" badge="!" (click)="confirmDialog('You\'re unsubscribing ' + product.name + ' plan. Would you like to continue?', 'Unsubscribe request', { product_id: product.id, variation_id: variation.id, action: 'unsubscribe' })"></p-button>
+                            <p-button *ngIf="!hasProductSubscription(variation.id)" class=" mt-2" label="Subscribe" (click)="confirmDialog('You\'re subscribing ' + product.name + ' plan. Would you like to continue?', 'Subscribe request', { product_id: product.id, variation_id: variation.id, action: 'subscribe' })"></p-button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="" style="width: 1px;" *ngIf="product.id > 0 && product.group=='plans'"></td>
+                  </tr>
+                </ng-template>
+              </p-table>
+
+              <p-table #pmt [value]="products" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="false"
+                       [globalFilterFields]="['number']" [(selection)]="selectedProduct" [rowHover]="true"
+                       [showCurrentPageReport]="true">
+                <ng-template pTemplate="header" class="grid">
+                  <tr>
+                    <th class="col-12">Addons</th>
+                    <th class=""></th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-product class="">
+                  <tr>
+                    <!-- Addon Subscriptions -->
+                    <td class="" *ngIf="product.id > 0 && product.group == 'addon' && product.sku == 'ecms-addon-recording'">
+                      <b *ngIf="product.id > 0">{{product.description}}</b>
+                      <div class="grid justify-content-between">
+                        <div class="col-8">
+                          <div><b>Sku: </b> <span class="text-400">{{product.sku}}</span></div>
+                          <div><b>Description: </b> <span class="text-400">{{product.description}}</span></div>
+                        </div>
+                        <div class="grid xl:col-4 lg:col-4 md:col-12 sm:col-12 justify-content-end" *ngIf="product.id > 0">
+                          <div class="xl:col-6 lg:col-6 md:col-6 sm:col-12" *ngFor="let variation of product.ProductVariations">
+                            <div><i>Price: </i> <span class="text-400">${{variation.price}}</span></div>
+                            <div><i>Recur: </i> <span class="text-400">{{variation.recur}}</span></div><br>
+                            <!--<li><i>Qty:</i> {{variation.maxQuantity}}</li>-->
+                            <p-button *ngIf="hasProductSubscription(variation.id)"  class="mr-1 mt-2" label="Unsubscribe" badge="!" (click)="confirmDialog('You\'re unsubscribing ' + product.name + ' addon. Would you like to continue?', 'Unsubscribe request', { product_id: product.id, variation_id: variation.id, action: 'unsubscribe' })"></p-button>
+                            <p-button *ngIf="!hasProductSubscription(variation.id)" class=" mt-2" label="Subscribe"   (click)="confirmDialog('You\'re subscribing ' + product.name + ' addon. Would you like to continue?', 'Subscribe request', { product_id: product.id, variation_id: variation.id, action: 'subscribe' })"></p-button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Filler -->
+                    <td class="" style="width: 1px;" *ngIf="product.id > 0 && product.group == 'addon' && product.sku == 'ecms-addon-recording'"></td>
+
+                    <!-- Wallet Recharge -->
+                    <td *ngIf="product.id > 0 && product.group == 'addon' && product.sku == 'ecms-addon-charge'">
+                      <b *ngIf="product.id > 0">{{product.description}}</b>
+                      <div class="grid">
+                        <div class="col-12 md:col-8">
+                          <div><b>Sku: </b> <span class="text-400">{{product.sku}}</span></div>
+                          <div><b>Description: </b> <span class="text-400">{{product.description}}</span></div>
+                        </div>
+                        <div class="col-12 xl:col-4 lg:col-4 md:col-4">
+                          <div class="grid w-full">
+                            <div class="col-6 align-self-center"><i>Method: </i></div>
+                            <div class="col-6 align-self-center billing_method_component">
+                              <p-autoComplete class="" [(ngModel)]="selectedPaymentMethod" [suggestions]="paymentMethods" (completeMethod)="getPaymentMethodsList()" field="description" [dropdown]="true"
+                                              inputStyleClass="form-control qtBuy">
+                                <ng-template let-paym pTemplate="item">
+                                  <div class="pay-item">
+                                    <div>{{paym.description}}</div>
+                                  </div>
+                                </ng-template>
+                              </p-autoComplete>
+                            </div>
+
+                            <!--
+                            <select (change)="onSelectPaymentMethod($event)" class="form-control qtBuy">
+                              <option *ngFor="let method of paymentMethods" [value]="method.id" [selected]="selectedPaymentMethod.id == method.id">{{method.description}}</option>
+                            </select>
+                            -->
+                          </div>
+                          <div class="grid w-full">
+                            <div class="col-6 align-self-center"><i>Amount: </i></div>
+                            <div class="col-6 align-self-center">
+                              <p-inputNumber class="" [(ngModel)]="chargeAmount"
+                                             inputId="currency-us" mode="currency" currency="USD"
+                                             locale="en-US" min="3" [inputStyle]="{'width':'100%'}">
+                              </p-inputNumber>
+                            </div>
+                            <!--<input class="form-control qtBuy mt-3" type="number" min="3" [value]="chargeAmount" (change)="chargeAmount = $event.target.value">-->
+                          </div><br>
+                          <div class="grid w-full">
+                            <div class="col-6 col-offset-6">
+                              <p-button class=" mt-2" label="Charge" *ngIf="!selectedPaymentMethod || chargeAmount < 3" icon="pi pi-lock"></p-button>
+                              <p-button class=" mt-2" label="Charge" *ngIf="selectedPaymentMethod && chargeAmount >= 3" icon="pi pi-money-bill" (click)="confirmDialog('You\'re charging your wallet. Would you like to continue?', 'Charge request', { action: 'charge' })"></p-button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- Filler -->
+                    <td class="" style="width: 1px;" *ngIf="product.id > 0 && product.group == 'addon' && product.sku == 'ecms-addon-charge'"></td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </p-tabPanel>
+
+
+          <p-tabPanel *ngIf="!isAdmin" header="Payment Methonds" class="line-height-3">
+            <p-table #pmt [value]="paymentMethods" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="true" [globalFilterFields]="['number']" [(selection)]="selectedPaymentMethod" [rowHover]="true"
+                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+                  <ng-template pTemplate="caption">
+                    <div class="flex align-items-center">
+                      <div class="col-8">
+                        <h6>Payment Methods</h6>
+                      </div>
+                      <div class="col-4">
+                          <span class="p-input-icon-right">
+                          </span>
+                      </div>
+                    </div>
+                  </ng-template>
+                  <ng-template pTemplate="header">
+                    <tr>
+                      <th>Name</th>
+                      <th>Type</th>
+                      <th>Description</th>
+                      <th>Exp. Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="body" let-payment>
+                    <tr>
+                      <td>{{payment.name}}</td>
+                      <td>{{payment.type}}</td>
+                      <td>{{payment.description}}</td>
+                      <td>{{dateFormat(payment.expDate)}}</td>
+                      <td>
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded" (click)="removePayment(payment.token)"></button>
+                        <button *ngIf="payment.primary" pButton pRipple icon="pi pi-star-fill" class="p-button-rounded"  disabled="true"></button>
+                        <button *ngIf="!payment.primary" pButton pRipple icon="pi pi-star" class="p-button-rounded" (click)="setPrimaryPayment(payment.id)"></button>
+                      </td>
+                    </tr>
+                  </ng-template>
+                  <ng-template pTemplate="summary">
+                    <div class="flex justify-content-between">
+                      In total there are {{paymentMethods ? paymentMethods.length : 0 }} payment methods.
+                    </div>
+                  </ng-template>
+                </p-table>
+          </p-tabPanel>
+
+          <p-tabPanel *ngIf="!isAdmin" header="Payment Transactions" class="line-height-3">
+            <p-table #snt [value]="transactions" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="true" [globalFilterFields]="['amount']"  [rowHover]="true"
+                           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+                    <ng-template pTemplate="caption">
+                      <div class="flex align-items-center">
+                        <div class="col-8">
+                          <h6>Account Payment History</h6>
+                        </div>
+                        <div class="col-4 text-right">
+                            <span class="p-input-icon-right">
+                              <button type="button" pButton pRipple icon="pi pi-file" (click)="snt.exportCSV()" class="p-button-help mr-2" pTooltip="CSV" tooltipPosition="bottom"></button>
+                              <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2"  pTooltip="XLS" tooltipPosition="bottom"></button>
+                              <button type="button" pButton pRipple icon="pi pi-file-pdf" (click)="exportPdf()" class="p-button-danger mr-2" pTooltip="PDF" tooltipPosition="bottom"></button>
+                              <button type="button" pButton pRipple icon="pi pi-filter" (click)="snt.exportCSV({selectionOnly:true})" class="p-button-info ml-auto" pTooltip="Selection Only" tooltipPosition="bottom"></button>
+                            </span>
+                        </div>
+                      </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Amount</th>
+                        <th>Card Type</th>
+                        <th>Card Number</th>
+                        <th>Date</th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-trans>
+                      <tr>
+                        <td>{{trans?.amount.toFixed(2)}}</td>
+                        <td>{{trans.PaymentMethod?.description}}</td>
+                        <td>{{trans.PaymentMethod?.number}}
+                        <td>{{dateFormat(trans?.transactionDate, 'medium')}}</td>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="summary">
+                      <div class="flex align-items-center justify-content-between">
+                        In total there are {{transactions ? transactions.length : 0 }} transactions.
+                      </div>
+                    </ng-template>
+                  </p-table>
+          </p-tabPanel>
+        </p-tabView>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog Placeholder -->
+<p-confirmDialog [style]="{width: '50vw'}" key="overallDialog" [baseZIndex]="10000"></p-confirmDialog>

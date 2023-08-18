@@ -1,0 +1,80 @@
+<h4 class="page_title">Manage Users</h4>
+<div class="card">
+  <div class="grid">
+    <div class="col-12 md:col-5">
+      <div class="p-inputgroup">
+        <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue" [disabled]="isLoading" (keyup.enter)="onClickFilter()">
+        <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="isLoading ? '' : onClickFilter()"></button>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+<!--      <span class="p-buttonset mt-5">-->
+      <span class="mr-3" *ngIf="totalCount!=-1">Total <b>{{totalCount}}</b> User<span *ngIf="totalCount>1">s</span><em *ngIf="totalCount!=resultsLength && resultsLength!=-1"><br>{{resultsLength}} User<em *ngIf="resultsLength>1">s</em> Filtered</em></span>
+				<button pButton pRipple label="New User" *ngIf="permission==permissionTypeAll" routerLink="add"></button>
+<!--			</span>-->
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="users" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width:56px"></th>
+        <th [ngClass]="sortActive === 'firstName' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('firstName')">Name</a>
+        </th>
+        <th style="width: 42px;" class="hidden-xs"></th>
+        <th class="col-sm-hidden" [ngClass]="sortActive === 'email' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('email')">Email Address</a>
+        </th>
+        <th>Role</th>
+        <th style="width: 72px;" [ngClass]="sortActive === 'emailVerified' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('emailVerified')">Verified</a>
+        </th>
+        <th class="col-md-hidden" [ngClass]="sortActive === 'last_login' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('last_login')">Last Login</a>
+        </th>
+        <th *ngIf="!noNeedRemoveColumn" style="width:36px"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td class="">
+          <button pButton *ngIf="permission == permissionTypeAll || store.getUser().id == user.id" [routerLink]="['edit/' + user.id]" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+        <td class="">
+          <span class="p-column-title">Name</span>
+          {{ user.username }}
+        </td>
+        <td class="hidden-xs">
+          <span class="p-column-title">&nbsp;</span>
+          <span class="mr-2 p-badge p-component p-badge-no-gutter p-badge-lg p-badge-info">{{ user.username.substring(0,2).toUpperCase() }}</span>
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Email Address</span>
+          {{user.email}}<br>
+        </td>
+        <td>
+          <span class="p-column-title">Role</span>
+          {{user.DashRoleMapping && user.DashRoleMapping.length > 0 && user.DashRoleMapping[0].DashRole && user.DashRoleMapping[0].DashRole.name || ''}}
+        </td>
+        <td class="">
+          <span class="p-column-title">Verified</span>
+          <div class="inline-block" *ngIf="user.emailVerified"><span class="tag tag-success tag-size-md"><i class="pi pi-check"></i></span></div>
+          <div class="inline-block" *ngIf="!user.emailVerified"><span class="tag tag-danger tag-size-md"><i class="pi pi-times"></i></span></div>
+        </td>
+        <td class="col-md-hidden">
+          <span class="p-column-title">Last Login</span>
+          {{user.last_login}}
+        </td>
+        <td *ngIf="!noNeedRemoveColumn">
+          <button *ngIf="!user.isRemoveHidden" pButton type="button" [routerLink]="['delete', user.id]" icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-paginator  #paginator [rows]="pageSize" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [totalRecords]="resultsLength" (onPageChange)="paginate($event)"></p-paginator>
+</div>

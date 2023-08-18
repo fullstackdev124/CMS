@@ -1,0 +1,19 @@
+{
+    "name": "nodeuc",
+    "version": "1.0.0",
+    "description": "NodeJS CoreSIP Utility Framework",
+    "main": "nodeuc.js",
+    "scripts": {
+        "start": "node nodeuc.js",
+        "debug": "DEUBG=* node nodeuc.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Danilo Santoro <danilo.santoro@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.1",
+        "mysql": "^2.18.1",
+        "request": "^2.88.2",
+        "socket.io-client": "^2.4.0"
+    }
+}

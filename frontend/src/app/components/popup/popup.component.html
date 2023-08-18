@@ -1,0 +1,66 @@
+<!-- Notification -->
+<ng-container *ngIf="data.type === 'notification'">
+	<div [@fadeTop]="animationState" (@fadeTop.done)="onFadeFinished($event)" class="">
+		<div class="bg-0 border-b md:border border-30 md:rounded-sm shadow-lg py-5 md:py-2 md:w-auto" [ngClass]="data.color === 'red' ? 'bg_red': 'bg_green'">
+			<div class="flex justify-between">
+				<div class="flex flex-grow md:max-w-xs content-center items-center">
+					<p class="pl-2 truncate">
+						<i style="font-weight: bold" [ngClass]="data.color === 'red' ? 'remixicon-information-fill' : 'remixicon-check-fill'"></i> {{ data.text }}
+					</p>
+				</div>
+				<div class="flex text-center content-center items-center px-2" (click)="close()">
+					<i class="remixicon-close-line ri-fw"></i>
+				</div>
+			</div>
+		</div>
+	</div>
+</ng-container>
+
+<!-- Sidemenu -->
+<ng-container *ngIf="data.type === 'sideMenu'">
+		<div [@sliderMenu]="animationState" (@sliderMenu.done)="onFadeFinished($event)" class="h-screen w-3/4 md:w-56 bg-10 overflow-y-auto absolute left-0 inset-y-0">
+			<ng-container *ngTemplateOutlet="data.template; context: data.templateContext"></ng-container>
+		</div>
+	</ng-container>
+
+<!-- General floating modal / context -->
+<ng-container *ngIf="(!data.mobile && (data.type === 'contextPage' || data.type === 'contextMenu')) || data.type === 'modal'">
+	<div [@fadeTop]="animationState" (@fadeTop.done)="onFadeFinished($event)">
+		<div class="bg-0 border-30 border rounded shadow-lg">
+			<ng-container *ngTemplateOutlet="data.template; context: data.templateContext"></ng-container>
+		</div>
+	</div>
+</ng-container>
+
+<!-- Mobile -->
+<ng-container *ngIf="data.mobile">
+		<!-- Bottom modal on Mobile-->
+		<ng-container *ngIf="data.type === 'contextMenu'">
+			<div [@fadeBottom]="animationState" (@fadeBottom.done)="onFadeFinished($event)" class="w-full absolute bottom-0 inset-x-0">
+				<div class="bg-0 py-2 border-30 rounded-t shadow-lg w-full">
+					<div *ngIf="data.text" class="bg-0 rounded-t mx-3 pb-2 border-b border-30">
+						<p class="font-bold text-lg">{{ data.text }}</p>
+					</div>
+					<div class="overflow-y-auto" style="max-height: 66vh">
+						<ng-container *ngTemplateOutlet="data.template; context: data.templateContext"></ng-container>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+		<!-- Full Page on Mobile -->
+		<ng-container *ngIf="data.type === 'contextPage'">
+			<div [@fadeBottom]="animationState" (@fadeBottom.done)="onFadeFinished($event)" class="w-full absolute top-0 inset-x-0">
+				<div class="bg-10 border-30 rounded-t shadow-lg w-full h-screen">
+					<div *ngIf="data.text" class="bg-0 rounded-t py-3 border-b border-30">
+						<p class="text-lg">
+							<i class="remixicon-arrow-left-line ri-fw p-3" (click)="close()"></i>
+							<span class="font-bold">{{ data.text }}</span>
+						</p>
+					</div>
+					<div class="overflow-y-auto">
+						<ng-container *ngTemplateOutlet="data.template; context: data.templateContext"></ng-container>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+</ng-container>

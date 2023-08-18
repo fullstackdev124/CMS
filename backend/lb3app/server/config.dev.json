@@ -1,0 +1,95 @@
+{
+    "restApiProto": "http",
+    "restApiRoot": "/v1",
+    "publicHost": "0.0.0.0",
+    "adminId": 1,
+    "adminRoleId": 1,
+    "verificationCodeLength": 6,
+    "number_providers": {
+        "used": "telynx",
+        "call48": {
+            "host": "apicontrol.call48.com",
+            "protocol": "https",
+            "port": "443",
+            "path": "/api/v4",
+            "username": "dipvtel2",
+            "password": "RK5477ec"
+        },
+        "telynx": {
+            "port": 443,
+            "path": "/v2",
+            "protocol": "https",
+            "host": "api.telnyx.com",
+            "default_connection_id": "1965953097364670429",
+            "default_billing_group_id": "4f358b7d-1788-48c7-9626-117832cd10d2",
+            "key": "KEY0182B69C03712E4A8F3C2C9F9362716D_4BRAOXR8yebjB45LwI9NZo"
+        }
+    },
+    "filesystem": {
+        "apiRoot": "/local-fs",
+        "apiUsername": "admin",
+        "apiPassword": "letmein",
+        "apiHost": "0.0.0.0",
+        "apiPort": "80"
+    },
+    "redis": {
+        "host": "localhost",
+        "port": "6379",
+        "pass": "eYVX37EwVmmxKPCDmwMtyKVge1oLd2t80"
+    },
+    "payment": {
+        "stripe": {
+            "enabled": "1",
+            "public_dev_key": "pk_test_51KfmsNEAOF26RKKHfHkEu0c0jphBWk4o9x5LRAwroZrG5rjboHwBpKHmuG1AsXo02PbPfmRZhwYi5zBekb0F6v3M005mDTGSda",
+            "secret_dev_key": "sk_test_51KfmsNEAOF26RKKHDsVqPhajjVWlFy7rhOxpIqajnSkqQgr06HuxBUToqR24gJy3j9qsWqWQLxWl9qbUL2HDQSOq00c6fTKCAt",
+            "public_prod_key": "pk_test_51KfmsNEAOF26RKKHfHkEu0c0jphBWk4o9x5LRAwroZrG5rjboHwBpKHmuG1AsXo02PbPfmRZhwYi5zBekb0F6v3M005mDTGSda",
+            "secret_prod_key": "sk_test_51KfmsNEAOF26RKKHDsVqPhajjVWlFy7rhOxpIqajnSkqQgr06HuxBUToqR24gJy3j9qsWqWQLxWl9qbUL2HDQSOq00c6fTKCAt"
+        }
+    },
+    "opencnam": {
+        "enabled": true,
+        "num_len": 11,
+        "num_prefix": "+1",
+        "url": "https://api.opencnam.com/v3/phone/",
+        "account_sid": "ACad6cf0f65f954414bb162986db7569b4",
+        "auth_token": "AU3e854505781447e9975420b89232c2c0"
+    },
+    "emailConnector": {
+        "host": "mail.tfnms.com",
+        "port": 465,
+        "secure": true,
+        "authMethod": "PLAIN",
+        "auth": {
+            "user": "support@tfnms.com",
+            "pass": "NESCk^Q71;6C"
+        },
+        "tls": {
+            "rejectUnauthorized": false
+        },
+        "debug": true,
+        "fromEmail": "cms@techfusion.it",
+        "redirectURL": "https://ecms.dipvtel.com",
+        "activationURL": "/api/v1/DashUsers/activate"
+    },
+    "remoting": {
+        "context": false,
+        "rest": {
+            "handleErrors": false,
+            "handleUnknownPaths": false,
+            "normalizeHttpPath": false,
+            "xml": false
+        },
+        "json": {
+            "strict": false,
+            "limit": "25mb"
+        },
+        "urlencoded": {
+            "extended": true,
+            "limit": "25mb"
+        },
+        "sharedMethods": {
+            "*": true
+        },
+        "cors": false
+    }
+}

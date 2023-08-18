@@ -1,0 +1,443 @@
+<h4 class="page_title">Billing Settings &nbsp;<small class="description" *ngIf="isLoaded">for account: <b>{{user?.username}}</b>, balance: $<b>{{balance?.toFixed(2)}}</b></small></h4>
+<button pButton (click)="isShowInformation=true" class="p-button-info p-button-rounded p-button-text p-button-back" icon="pi pi-info-circle" label="Info"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card" *ngIf="isShowInformation">
+  <h6 style="line-height: 2rem;">
+    Below are the <b>Billing Settings</b> for your account.
+    You can set an emergency phone number for billing problems, adjust the recharge settings on your pre-paid account balance, make new manual payments, and add new payment methods.<br>
+    The <b><i class="pi pi-check"></i>primary</b> payment method will be used for all billing, and if that falls the <b><i class="pi pi-check"></i>backup</b> method will be used.
+  </h6>
+  <div class="flex justify-content-end">
+    <button pButton (click)="isShowInformation=false" class="p-button-danger mr-2" label="Close" icon="pi pi-times" iconPos="right"></button>
+    <button pButton class="" label="More Info" icon="pi pi-external-link" iconPos="right"></button>
+  </div>
+</div>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="General" [selected]="goingFrom==0">
+      <div class="grid mt-4">
+        <div class="col-12">
+          <h6>Critical Billing Phone Number <small>(recommended)</small></h6>
+          <p-inputMask mask="(999) 999-9999" [(ngModel)]="selectedBillingPhoneNumber"></p-inputMask>
+          <p class="p-warning-text" *ngIf="isBillingPhoneNumber">is strongly recommended</p>
+          <p class="description mt-5">A contact number to receive text messages for critical billing notices</p>
+        </div>
+
+        <div class="col-12 mt-5">
+          <h6>Auto-Recharge Settings</h6>
+          <div class="flex justify-content-start">
+            <div class="flex justify-content-start flex-nowrap align-items-center mr-2">
+              <label class="mr-1">When my balance falls below</label>
+              <p-dropdown class="" [options]="priceFalls" [(ngModel)]="selectedPriceFall" optionLabel="name"></p-dropdown>
+            </div>
+            <div class="flex justify-content-start flex-nowrap align-items-center">
+              <label class="mr-1">recharge it back up to</label>
+              <p-dropdown class="" [options]="priceCharges" [(ngModel)]="selectedPriceCharge" optionLabel="name"></p-dropdown>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple (click)="saveGeneral()" label="Save Changes"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Make a Payment" [selected]="goingFrom==1">
+      <ngx-stripe-card [options]="cardOptions" [elementsOptions]="elementsOptions" hidden></ngx-stripe-card>
+      <div class="grid mt-3 p-fluid">
+        <div class="col-10 md:col-5 field">
+          <h6>Payment Method</h6>
+            <p-autoComplete [suggestions]="filteredPaymentMethod" [(ngModel)]="selectedPaymentMethod" (completeMethod)="filterPaymentMethod($event)" field="label" [dropdown]="true"></p-autoComplete>
+        </div>
+        <div class="col-2 md:col-7">
+          <button pButton class="payment_method_edit_button p-button-info p-button-rounded p-button-text" icon="pi pi-external-link" iconPos="right" label="Edit" [disabled]="!selectedPaymentMethod || !selectedPaymentMethod.hasOwnProperty('value')" (click)="editPaymentMethod()"></button>
+        </div>
+        <div class="col-12 md:col-5 field mt-4">
+          <h6>Amount <small>($2.50 or greater)</small></h6>
+          <p-inputNumber mode="currency" [(ngModel)]="selectedAmount" currency="USD" locale="en-US"></p-inputNumber>
+        </div>
+      </div>
+
+      <div class="grid mt-5">
+        <div class="col-6">
+          <button pButton pRipple label="Make Payment" (click)="makePayment()"></button>
+          <button pButton pRipple routerLink="../payment_method/add" [queryParams]="{ from: 1 }" class="ml-3 p-button-secondary" label="New Payment Method"></button>
+        </div>
+        <div class="col-6 text-right">
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Payment History" [selected]="goingFrom==2">
+      <div class="grid mt-4">
+        <div class="col-12 md:col-5">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterPaymentHistoryValue" (keyup.enter)="onSearchPaymentHistory()">
+            <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="onSearchPaymentHistory()"></button>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+          <span class="mr-3" *ngIf="paymentHistory_resultsLength!=-1"><em>{{paymentHistory_resultsLength}}</em> Log<span *ngIf="paymentHistory_resultsLength>1">s</span></span>
+          <button type="button" pButton pRipple icon="pi pi-refresh" (click)="onRefreshPaymentHistory()" class="p-button-info mr-2" label="Refresh"></button>
+          <button type="button" pButton pRipple icon="pi pi-cloud-download" (click)="exportPaymentHistory()" class="p-button-warning mr-2" label="Export"></button>
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <div class="col-12">
+          <p-table [value]="paymentHistory" responsiveLayout="stack" responsive="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Date</th>
+                <th>Card Type</th>
+                <th>Amount</th>
+<!--                <th>Card Name</th>-->
+                <th>Description</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-trans>
+              <tr>
+                <td>
+                  <span class="p-column-title">Dates</span>
+                  {{getDateTimeStringOfUserTimezone(trans?.transactionDate)}}
+                </td>
+                <td>
+                  <span class="p-column-title">Card Type</span>
+                  {{trans.PaymentMethod ? trans.PaymentMethod?.description : ""}}
+                </td>
+                <td>
+                  <span class="p-column-title">Amount</span>
+                  {{trans.amount>0 ? '$'+trans.amount : '-$'+ (trans.amount*-1)}}
+                </td>
+<!--                <td>{{trans.PaymentMethod?.name}}</td>-->
+                <td>
+                  <span class="p-column-title">Description</span>
+                  {{trans?.description}}
+                </td>
+            </ng-template>
+          </p-table>
+          <p-paginator [rows]="paymentHistory_pageSize" [totalRecords]="paymentHistory_resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="paymentHistory_paginate($event)"></p-paginator>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Payment Methods" [selected]="goingFrom==3">
+      <div class="grid mt-3">
+        <div class="col-12">
+          <p-table responsiveLayout="stack" responsive="true" [value]="paymentMethods">
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 56px;"></th>
+                <th>Card Name</th>
+                <th>Description</th>
+                <th>Primary</th>
+                <th>Exp. Date</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-method>
+              <tr>
+                <td>
+                  <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-outlined" (click)="editPaymentMethodList(method.id)"></button>
+                </td>
+                <td>
+                  <span class="p-column-title">Card Name</span>
+                  {{method.name}}
+                </td>
+                <td>
+                  <span class="p-column-title">Description</span>
+                  {{method.description}}
+                </td>
+                <td>
+                  <span class="p-column-title">Primary?</span>
+                  <i *ngIf="method.primary" class="pi pi-check"></i>
+                  <i *ngIf="!method.primary" class="pi pi-times"></i>
+                </td>
+                <td>
+                  <span class="p-column-title">Exp. Date</span>
+                  {{ method.expireDate }}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple routerLink="../payment_method/add" [queryParams]="{ from: 3 }" label="New Payment Method"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Account Logs" [selected]="goingFrom==4">
+      <div class="grid mt-4">
+        <div class="col-12 md:col-5">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterAccountLogValue" (keyup.enter)="onSearchAccountLog()">
+            <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="onSearchAccountLog()"></button>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+          <span class="mr-3" *ngIf="accountLog_resultsLength!=-1"><em>{{accountLog_resultsLength}}</em> Log<span *ngIf="accountLog_resultsLength>1">s</span></span>
+          <button type="button" pButton pRipple icon="pi pi-refresh" (click)="onRefreshAccountLog()" class="p-button-info mr-2" label="Refresh"></button>
+          <button type="button" pButton pRipple icon="pi pi-cloud-download" (click)="exportAccountLog()" class="p-button-warning mr-2" label="Export"></button>
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <div class="col-12">
+          <p-table [value]="accountLogs" responsiveLayout="stack" responsive="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-trans>
+              <tr>
+                <td>
+                  <span class="p-column-title">Dates</span>
+                  {{getDateTimeStringOfUserTimezone(trans?.transactionDate)}}
+                </td>
+                <td>
+                  <span class="p-column-title">Type</span>
+                  <span *ngIf="trans.productId==4">Auto Charge</span>
+                  <span *ngIf="trans.productId==3">Charge</span>
+                  <span *ngIf="trans.productId==5">Number Charge</span>
+                  <span *ngIf="trans.productId==6">Call Charge</span>
+                  <span *ngIf="trans.productId!=3 && trans.productId!=4 && trans.productId!=5 && trans.productId!=6">Manual Charge</span>
+                </td>
+                <td>
+                  <span class="p-column-title">Amount</span>
+                  {{trans.amount>0 ? '$'+trans.amount : (trans.paymentId==null ? '-$'+(trans.amount*-1) : '$'+ (trans.amount*-1)) }}
+                </td>
+                <td>
+                  <span class="p-column-title">Description</span>
+                  {{trans?.description}}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <p-paginator [rows]="accountLog_pageSize" [totalRecords]="accountLog_resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="accountLog_paginate($event)"></p-paginator>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Subscriptions" *ngIf="isSuperAdmin">
+      <p-table [value]="subscriptions"
+               [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,25,50]" sortField="created"
+               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+               responsiveLayout="stack" responsive="true" >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="created">
+              Created At
+              <p-sortIcon field="created"></p-sortIcon>
+            </th>
+            <th pSortableColumn="product?.name">
+              Product
+              <p-sortIcon field="product?.name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="customer?.companyName">
+              Customer
+              <p-sortIcon field="created"></p-sortIcon>
+            </th>
+            <th pSortableColumn="product_variation?.price">
+              Amount
+              <p-sortIcon field="product_variation?.price"></p-sortIcon>
+            </th>
+            <th pSortableColumn="period.start">
+              Period
+              <p-sortIcon field="period.start"></p-sortIcon>
+            </th>
+            <th>Description</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-item>
+          <tr>
+            <td>
+              <span class="p-column-title">Created At</span>
+              {{item?.created}}
+            </td>
+            <td>
+              <span class="p-column-title">Product</span>
+              {{item?.product?.name}}
+            </td>
+            <td>
+              <span class="p-column-title">Customer</span>
+              {{item?.customer?.companyName}} {{item?.customer?.companyId}}
+            </td>
+            <td>
+              <span class="p-column-title">Amount</span>
+              $ {{item?.product_variation?.price}}
+            </td>
+            <td>
+              <span class="p-column-title">Period</span>
+              {{item?.period?.start}} ~ {{item?.period?.end}}
+            </td>
+            <td>
+              <span class="p-column-title">Description</span>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+
+   <!-- <p-tabPanel header="Service Address" [selected]="goingFrom==5">
+      <h6 style="line-height: 20px;" class="mt-4">Sales taxes for DIPVTEL's products are dependent on where you consume our products, which is determined by your 'service address'. In most cases, this is the same as your billing address. It is critical that you update this form with accurate address information so we can continue to service your Account.</h6>
+      <h6>If you are exempt from sales and use tax, please contact <a href="mailto:billing@dipvtel.com">billing@dipvtel.com</a> to receive our exemption forms.</h6>
+      <h6>Changes to this address apply only to <b>account xxxxxx: DIPVTEL LLC</b></h6>
+
+      <div class="grid mt-5">
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <p>Full Name or Company Name</p>
+            <input class="p-component-full" type="text" pInputText>
+          </div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <p>Service Address</p>
+            <input class="p-component-full" type="text" pInputText>
+          </div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-3">
+          <div class="field">
+            <p>City</p>
+            <input class="p-component-full" type="text" pInputText>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="field">
+            <p>State</p>
+            <input class="p-component-full" type="text" pInputText>
+          </div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-3">
+          <div class="field">
+            <p>Country</p>
+            <p-dropdown class="p-component-full" [options]="countries" [(ngModel)]="selectedCountry" optionLabel="label" [filter]="true" filterBy="label">
+              <ng-template pTemplate="selectedItem">
+                <div class="country-item country-item-value flex justify-content-start align-items-center" *ngIf="selectedCountry">
+                  <img [src]="selectedCountry.value ? 'assets/images/flags/' + selectedCountry.value + '.svg' : '' "  style="width: 24px;" alt=""/>
+                  <div class="ml-1">{{selectedCountry?.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-country pTemplate="item">
+                <div class="country-item flex justify-content-start align-items-center">
+                  <img [src]="country.value ? 'assets/images/flags/' + country.value.value + '.svg' : '' "  style="width: 24px;" alt=""/>
+                  <div class="ml-1">{{country?.value.label}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="col-12 md:col-3">
+          <div class="field">
+            <p>Postal Code</p>
+            <input class="p-component-full" type="text" pInputText>
+          </div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-12 md:col-6">
+          <div class="field">
+            <p>Value Added Tax <small>(optional for EU customers, does not have tax implications)</small></p>
+            <input class="p-component-full" type="text" pInputText>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid mt-2">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save Changes"></button>
+        </div>
+      </div>
+    </p-tabPanel>-->
+
+   <!-- <p-tabPanel header="Taxes & Fees" [selected]="goingFrom==6">
+      <h6 class="mt-4">Usage dates and times are in UTC. Taxes are charged on the 1st of the month for the prior month's usage. <a href="#">Learn more</a> about how we calculate sales tax.</h6>
+      <div class="grid mt-2">
+        <div class="col-6 p_dropdown_area">
+          <span class="p-float-label">
+            <p-dropdown id="multiselect" optionLabel="name"></p-dropdown>
+             <label for="multiselect">Taxes and Fees for Period</label>
+          </span>
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Download" icon="pi pi-cloud-download"></button>
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <p-table responsiveLayout="stack" responsive="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Tax Type</th>
+              <th>Tax Amount</th>
+              <th>Year</th>
+              <th>Month</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body">
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>-->
+
+  </p-tabView>
+</div>
+
+<p-dialog header="Edit Payment Method" [(visible)]="isEditPaymentMethod" [modal]="true">
+  <div class="grid">
+    <div class="col-12">
+      <div class="field">
+        <p>Card Name</p>
+        <input class="p-component-full" [(ngModel)]="selectedPaymentName" type="text" pInputText>
+      </div>
+    </div>
+    <div class="col-12">
+      <div class="field">
+        <p>Country</p>
+        <p-dropdown class="p-component-full" [options]="countries" [(ngModel)]="selectedPaymentCountry" optionLabel="label" [filter]="true" filterBy="label">
+          <ng-template pTemplate="selectedItem">
+            <div class="country-item country-item-value flex justify-content-start align-items-center" *ngIf="selectedPaymentCountry">
+              <img [src]="selectedPaymentCountry.value ? 'assets/images/flags/' + selectedPaymentCountry.value + '.svg' : '' "  style="width: 24px;" alt=""/>
+              <div class="ml-1">{{selectedPaymentCountry?.label}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-country pTemplate="item">
+            <div class="country-item flex justify-content-start align-items-center">
+              <img [src]="country.value ? 'assets/images/flags/' + country.value.value + '.svg' : '' "  style="width: 24px;" alt=""/>
+              <div class="ml-1">{{country?.value.label}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Set as Primary" class="p-button-info" [disabled]="editingPaymentMethod?.primary" (click)="setPrimaryPaymentMethod()"></button>
+<!--    <button pButton pRipple label="Set as Backup" class="p-button-warning"></button>-->
+    <button pButton pRipple label="Save Changes" (click)="savePaymentMethod()"></button>
+  </ng-template>
+</p-dialog>
+<p-confirmDialog [style]="{width: '50vw'}" key="overallDialog" [baseZIndex]="10000"></p-confirmDialog>

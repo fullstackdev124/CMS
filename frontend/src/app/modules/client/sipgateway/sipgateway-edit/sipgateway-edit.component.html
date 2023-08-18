@@ -1,0 +1,77 @@
+<h4 class="page_title">Edit SIP Gateway</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="General">
+      <div class="p-fluid grid validation-form">
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="text" pInputText id="inputmask1" [(ngModel)]="selectedName" [ngClass]="formValid.name ? '' : 'ng-invalid ng-dirty'"  name="name" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)"/>
+              <label for="inputmask1">Name</label>
+            </span>
+          <p class="p-error" *ngIf="!formValid.name">Name is required.</p>
+        </div>
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="text" pInputText id="inputmask2" [(ngModel)]="selectedAddress" [ngClass]="formValid.address ? '' : 'ng-invalid ng-dirty'"  name="address" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)" />
+              <label for="inputmask2">Address</label>
+            </span>
+          <p class="p-error" *ngIf="!formValid.address">Address should be valid format.</p>
+        </div>
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="number" pInputText id="inputmask3" [(ngModel)]="selectedPort" [ngClass]="formValid.port ? '' : 'ng-invalid ng-dirty'"  name="port" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)" />
+              <label for="inputmask3">Port</label>
+            </span>
+          <p class="p-error" *ngIf="!formValid.port">Port should be valid number. (5060 ~ 65536)</p>
+        </div>
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="number" pInputText id="inputmask4" [(ngModel)]="selectedStrip" [ngClass]="formValid.digitsStrip ? '' : 'ng-invalid ng-dirty'"  name="digits_strip" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)" />
+              <label for="inputmask4">Digits Strip</label>
+            </span>
+          <p class="p-error" *ngIf="!formValid.digitsStrip">Port should be valid number. (0 ~ 10)</p>
+        </div>
+        <div class="field col-12 md:col-6" *ngIf="customerSelectable">
+            <span class="p-float-label" >
+              <p-dropdown id="dropdown1" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="sipGateway.customerId = $event.value.id" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+              <label for="dropdown1">Customer</label>
+            </span>
+        </div>
+        <div [ngClass]="customerSelectable ? 'field col-12 md:col-6' : 'field col-12'">
+            <span class="p-float-label">
+              <input type="text" pInputText id="inputmask5" [(ngModel)]="selectedDescription" [ngClass]="formValid.description ? '' : 'ng-invalid ng-dirty'"  name="description" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)"/>
+              <label for="inputmask5">Description</label>
+            </span>
+          <p class="p-error" *ngIf="!formValid.description">Description is required.</p>
+        </div>
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <p-dropdown id="dropdown12" [(ngModel)]="selectedCalledType" [options]="calledTypes" (onChange)="sipGateway.type = $event.value.key" [autoDisplayFirst]="true" optionLabel="label"></p-dropdown>
+              <label for="dropdown12">Gateway Type</label>
+            </span>
+        </div>
+        <div class="col-12 md:col-6 flex justify-content-start">
+          <div class="field-radiobutton ml-3 mr-5">
+            <p-radioButton name="kind" value="true" [(ngModel)]="isWhitelisted" id="opt_whitelisted"></p-radioButton>
+            <label for="opt_whitelisted">Whitelisted</label>
+          </div>
+          <div class="field-radiobutton">
+            <p-radioButton name="kind" value="false" [(ngModel)]="isWhitelisted" id="opt_blacklisted"></p-radioButton>
+            <label for="opt_blacklisted">Blacklisted</label>
+          </div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+          <button pButton pRipple label="Release SIP Gateway" class="p-button-danger" [routerLink]="['../../delete', sipGateway && sipGateway.id]"></button>
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save Changes" [disabled]="!isFormInvalid()" (click)="onSaveChange()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

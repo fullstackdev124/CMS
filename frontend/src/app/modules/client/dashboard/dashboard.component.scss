@@ -1,0 +1,44 @@
+.statistics_panel .card {
+  //cursor: pointer;
+}
+
+h5 i {
+  font-size: 12px;
+}
+.statistics_panel h6 {
+  font-size: 14px;
+}
+
+.statistics_panel h4 {
+  font-size: 24px;
+}
+
+.statistics_panel .today h4, .statistics_panel .today h6 {
+  color: #47C650;
+}
+
+.statistics_panel .yesterday h4, .statistics_panel .yesterday h6 {
+  color: #E6A91D;
+}
+
+.statistics_panel .thisWeek h4, .statistics_panel .thisWeek h6 {
+  color: #2f51f3;
+}
+
+.statistics_panel .lastWeek h4, .statistics_panel .lastWeek h6 {
+  color: #A86ADD;
+}
+
+.statistics_panel .thisMonth h4, .statistics_panel .thisMonth h6 {
+  color: #9b115d;
+}
+
+.statistics_panel .lastMonth h4, .statistics_panel .lastMonth h6 {
+  color: #42A5F5;
+}
+
+.vs-button {
+  font-size: 12px;
+  padding-left: 16px;
+  cursor: pointer;
+}

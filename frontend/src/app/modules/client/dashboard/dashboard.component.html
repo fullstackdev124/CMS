@@ -1,0 +1,206 @@
+<h4 class="page_title">Welcome {{fullname}}<br><small>Measure How Fast You’re Growing Monthly Recurring Revenue. <a>Learn More</a></small></h4>
+<!--<p-blockUI [blocked]="isLoading"></p-blockUI>-->
+<!--<p-blockUI [blocked]="blockContent">-->
+<!--  <p-progressSpinner></p-progressSpinner>-->
+<!--</p-blockUI>-->
+<p-blockUI [blocked]="isLoading">
+</p-blockUI>
+
+<div class="grid mt-5 statistics_panel">
+  <div class="col-12 md:col-2 lg:col-2 sm:col-4">
+    <div class="card mb-0 text-center today" (click)="changeRangeType('today')">
+      <h4>{{logsCounts.today | number}}</h4>
+      <h6>Today</h6>
+    </div>
+  </div>
+  <div class="col-12 md:col-2 lg:col-2 sm:col-4">
+    <div class="card mb-0 text-center yesterday" (click)="changeRangeType('yesterday')">
+      <h4>{{logsCounts.yesterday | number}}</h4>
+      <h6>Yesterday</h6>
+    </div>
+  </div>
+  <div class="col-12 md:col-2 lg:col-2 sm:col-4">
+    <div class="card mb-0 text-center thisWeek" (click)="changeRangeType('thisWeek')">
+      <h4>{{logsCounts.thisWeek | number}}</h4>
+      <h6>This Week</h6>
+    </div>
+  </div>
+  <div class="col-12 md:col-2 lg:col-2 sm:col-4">
+    <div class="card mb-0 text-center lastWeek" (click)="changeRangeType('lastWeek')">
+      <h4>{{logsCounts.lastWeek | number}}</h4>
+      <h6>Last Week</h6>
+    </div>
+  </div>
+  <div class="col-12 md:col-2 lg:col-2 sm:col-4">
+    <div class="card mb-0 text-center thisMonth" (click)="changeRangeType('thisMonth')">
+      <h4>{{logsCounts.thisMonth | number}}</h4>
+      <h6>This Month</h6>
+    </div>
+  </div>
+  <div class="col-12 md:col-2 lg:col-2 sm:col-4">
+    <div class="card mb-0 text-center lastMonth" (click)="changeRangeType('lastMonth')">
+      <h4>{{logsCounts.lastMonth | number}}</h4>
+      <h6>Last Month</h6>
+    </div>
+  </div>
+</div>
+
+<!--<div class="card mb-5">
+  <div class="grid">
+    <p-table [value]="table_data" [scrollable]="true" scrollHeight="500px" responsiveLayout="stack" responsive="true">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Tracking Source</th>
+          <th scope="col">Period Unique</th>
+          <th scope="col">Total Time
+            <small>(minute)</small>
+          </th>
+          <th scope="col">Total</th>
+        </tr>
+        <tr *ngFor="let data_general of table_data_general" style="font-size: 14px">
+          <th style="font-size: 14px;">
+            <div style="color: #888">{{data_general.name}}</div>
+          </th>
+          <th style="font-size: 14px">{{overall_period_unique}}</th>
+          <th style="font-size: 14px"><span>{{data_general.avg_time}} <sup>avg</sup></span><br/>
+            <small style="font-weight: bold !important;">{{data_general.total_time| number : '0.0-10'}}
+              <sup>total</sup></small>
+          </th>
+          <th style="font-size: 14px">{{data_general.total_calls | number : '0.0-10'}}</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-data>
+        <tr>
+          <td>
+            <span class="p-column-title">Tracking Source</span>
+            <div class="inline-block">
+              <span class="item-percentage" [style.background-color]="data.color">{{data.percent | ceilWithMinimum: 1}}<small>%</small></span>&nbsp;&nbsp;
+              <strong>{{data.name}}</strong><br>
+            </div>
+          </td>
+          <td>
+            <span class="p-column-title">Period Unique</span>
+            <div class="inline-block">
+              <b style="font-size: 14px">{{data.period_unique}}</b><br>
+              <small style="font-size: 12px">{{data.period_unique | calcPeriodUniquePerc: overall_period_unique}}%</small>
+            </div>
+          </td>
+          <td>
+            <span class="p-column-title">Total Time<small>(minute)</small></span>
+            <div class="inline-block">
+              <span style="font-size: 14px">{{data.avg_time}} <sup>avg</sup></span><br>
+              <small style="font-size: 12px">{{data.total_time | number: '0.0-10'}} <sup>total</sup></small>
+            </div>
+          </td>
+          <td>
+            <span class="p-column-title">Total</span>
+            <div class="inline-block">
+             <b style="font-size: 14px">{{data.total_calls | number: '0.0-10'}}</b><br>
+             <small style="font-size: 12px">{{data.percent}}%</small>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>-->
+
+<div class="grid mt-5" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <div class="grid">
+        <div class="col-12">
+          <h5>Top Customers by Total Calls</h5>
+        </div>
+      </div>
+      <div class="grid">
+        <p-chart type="horizontalBar" [data]="topCustomersByTotalCallData" [options]="topCustomersByTotalCallOptions" [plugins]="chartPlugins" style="width:100%"  ></p-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <div class="grid">
+        <div class="col-12">
+          <h5>Top Customers by Average Duration</h5>
+        </div>
+      </div>
+      <div class="grid">
+        <p-chart type="horizontalBar" [data]="topCustomersByAvgDurationData" [options]="topCustomersByAvgDurationOptions" [plugins]="chartPlugins" style="width:100%"  ></p-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid mt-5" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <div class="grid">
+        <div class="col-12">
+          <h5>Top Tracking Sources by Total Calls</h5>
+        </div>
+      </div>
+      <div class="grid">
+        <p-chart type="horizontalBar" [data]="topSourcesByTotalCallData" [options]="topSourcesByTotalCallOptions" [plugins]="chartPlugins" style="width: 100%;" height="24vh" ></p-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <div class="grid">
+        <div class="col-12">
+          <h5>Top Tracking Sources by Average Duration</h5>
+        </div>
+      </div>
+      <div class="grid">
+        <p-chart type="horizontalBar" [data]="topSourcesByAvgDurationData" [options]="topSourcesByAvgDurationOptions" [plugins]="chartPlugins" style="width:100%" height="24vh" ></p-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid mt-5">
+  <div class="col-12">
+    <div class="card">
+      <div class="grid">
+        <div class="col-6">
+          <h5>{{compareOptions.title}} <a class="p-button-text vs-button" (click)="changeVSGraph()"><i class="pi pi-arrow-circle-left"></i> {{compareOptions.button}}</a></h5>
+        </div>
+        <div class="col-6 text-right">
+          <p-multiSelect [options]="legends" [(ngModel)]="selectedLegends" (onPanelHide)="onChangeLegends($event)" [filter]="true" [maxSelectedLabels]="2" [displaySelectedLabel]="false" [defaultLabel]="legendLabel" filterBy="label" optionLabel="label" class="p-component-full"></p-multiSelect>
+        </div>
+      </div>
+      <div class="grid">
+        <p-chart #compareChart type="line" [data]="chartCompareData" [options]="chartCompareOptions" [plugins]="chartPluginsEnd" style="width: 100%;" height="50vh" ></p-chart>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="grid mb-1">
+    <div class="col-4">
+      <h5>Total Calls</h5>
+    </div>
+    <div class="col-8 text-right">
+    </div>
+  </div>
+  <div class="grid">
+    <p-chart type="bar" [data]="totalData" [options]="totalOptions" [plugins]="chartPlugins" style="width:100%" height="50vh" ></p-chart>
+  </div>
+</div>
+
+<div class="card mt-5">
+  <div class="grid mb-1">
+    <div class="col-4">
+      <h5>Top Hours for This Week</h5>
+    </div>
+    <div class="col-8 text-right">
+    </div>
+  </div>
+  <div class="grid">
+    <p-chart type="bar" [data]="topHoursData" [options]="topHoursOptions" [plugins]="chartPlugins" style="width:100%" height="50vh" ></p-chart>
+  </div>
+</div>

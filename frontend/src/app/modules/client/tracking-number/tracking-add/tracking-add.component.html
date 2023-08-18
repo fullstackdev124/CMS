@@ -1,0 +1,181 @@
+<h4 class="page_title">New Tracking Number</h4>
+<button pButton [disabled]="isUploading" class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="New Number">
+      <div class="p-fluid grid mt-3">
+        <div class="field col-12 md:col-6 flex align-items-start">
+          <span class="p-float-label" >
+            <p-dropdown [options]="phone_countries" [(ngModel)]="selectedPhoneCountry" optionLabel="label" [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+              <ng-template pTemplate="selectedItem">
+                <div class="flex">
+                  <img src="assets/images/flags/{{selectedPhoneCountry?.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{selectedPhoneCountry?.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="flex">
+                  <img src="assets/images/flags/{{item?.value.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{item?.value.label}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <label>Country</label>
+          </span>
+          <span class="p-float-label">
+            <p-inputMask id="inputtext" [(ngModel)]="selectedTrackingNumber" [placeholder]="selectedPhoneCountry?.placeholder" [mask]="selectedPhoneCountry?.mask" [unmask]="true"></p-inputMask>
+            <label for="inputtext"></label>
+          </span>
+        </div>
+
+        <div class="field col-12 md:col-6" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown1" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="number.customerId = $event.value.id" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+              <label for="dropdown1">Customer</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Create New Tracking Number" (click)="onCreateNumber(false)"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+    <p-tabPanel header="Bulk Upload Numbers">
+      <h6 style="padding-top: 20px;"><b>{{data.length}}</b> Tracking Numbers</h6>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-2">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown2" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="selCustomerId = $event.value.id" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+              <label for="dropdown2">Company</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-3">
+          <span class="p-float-label" >
+            <p-dropdown [options]="phone_countries" [(ngModel)]="selectedCountryCode" optionLabel="label" [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+              <ng-template pTemplate="selectedItem">
+                <div class="flex">
+                  <img src="assets/images/flags/{{selectedCountryCode?.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{selectedCountryCode?.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="flex">
+                  <img src="assets/images/flags/{{item?.value.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{item?.value.label}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <label>Tracking Number</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-3">
+          <span class="p-float-label" >
+            <p-dropdown [options]="phone_countries" [(ngModel)]="selectedCountryCode1" optionLabel="label" [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+              <ng-template pTemplate="selectedItem">
+                <div class="flex">
+                  <img src="assets/images/flags/{{selectedCountryCode1?.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{selectedCountryCode1?.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="flex">
+                  <img src="assets/images/flags/{{item?.value.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{item?.value.label}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <label>Receiving Number</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-2">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown3" [options]="types" (onChange)="action = $event.value.key" [autoDisplayFirst]="true" optionLabel="value"></p-dropdown>
+              <label for="dropdown3">Upload Mode</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-2">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown4" [options]="routingActionEnum" (onChange)="routingAction = $event.value.key" [autoDisplayFirst]="true" optionLabel="value"></p-dropdown>
+              <label for="dropdown4">Routing Action</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mb-5">
+        <div class="col-4">
+        </div>
+        <div class="col-8 text-right">
+          <button pButton pRipple label="Import" icon="pi pi-cloud-file" (click)="importPanelOpened = true" class="mr-2"></button>
+          <button pButton pRipple label="Upload" icon="pi pi-cloud-upload" (click)="onCreateNumber(true)" [disabled]="data.length == 0"></button>
+        </div>
+      </div>
+
+      <div class="card" >
+        <p-messages severity="info" *ngIf="importPanelOpened">
+          <ng-template pTemplate>
+            <h6 class="">
+              File Format should be same as below. <small style="">&nbsp;(Type should be .xlsx, .xls, or .csv!)</small>
+              <br>
+              Tracking Number or Receiving Number should not include + sign or Country code.
+            </h6>
+          </ng-template>
+        </p-messages>
+        <p-messages severity="error" *ngIf="!importPanelOpened && action=='delete'">
+          <ng-template pTemplate>
+            <h6 class="">
+              If File have Tracking Source or Receiving Number, It'll remove it, too.
+            </h6>
+          </ng-template>
+        </p-messages>
+        <p-table [value]="bulkSampleData" responsiveLayout="stack" responsive="true" *ngIf="importPanelOpened">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Tracking Number</th>
+              <th>Tracking Source</th>
+              <th>Receiving Number</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td><span class="p-column-title">Tracking Number</span>{{item.number}}</td>
+              <td><span class="p-column-title">Tracking Source</span>{{item.source}}</td>
+              <td><span class="p-column-title">Receiving Number</span>{{item.receiving}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <div class="grid mt-3" *ngIf="importPanelOpened">
+          <div class="col-6">
+            <button pButton pRipple label="Cancel" class="p-button-warning" (click)="importPanelOpened = false"></button>
+          </div>
+          <div class="col-6 text-right">
+            <button pButton pRipple label="Choose File" (click)="fileInput.click()"></button>
+            <input #fileInput type="file" (change)="changeListener($event)" style="display: none" accept=".xlsx,.xls,.csv"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p-table [value]="data" [scrollable]="true" scrollHeight="300px" responsiveLayout="stack" responsive="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Tracking Number</th>
+              <th>Tracking Source</th>
+              <th>Receiving Number</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td><span class="p-column-title">Tracking Number</span>{{row[0]}}</td>
+              <td><span class="p-column-title">Tracking Source</span>{{row.length>1 ? row[1] : ''}}</td>
+              <td><span class="p-column-title">Receiving Number</span>{{row.length>2 ? row[2] : ''}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

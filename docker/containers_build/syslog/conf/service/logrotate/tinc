@@ -1,0 +1,11 @@
+/var/log/tinc*.log {
+        rotate 30
+        daily
+        missingok
+        extension .log
+        dateext
+        dateformat _%Y%m%d_%s
+        compress
+}
+
+

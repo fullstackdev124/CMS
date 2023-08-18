@@ -1,0 +1,188 @@
+{
+	"name": "TrackingSources",
+	"options": {
+		"idInjection": false,
+		"mysql": {
+			"schema": "ecms",
+			"table": "tracking_sources"
+		}
+	},
+	"scope": {
+		"include": [
+			"Customer"
+		]
+	},
+	"properties": {
+		"id": {
+			"type": "Number",
+			"id": 1,
+			"generated": true,
+			"required": false,
+			"length": null,
+			"precision": 10,
+			"scale": 0,
+			"mysql": {
+				"columnName": "id",
+				"dataType": "int",
+				"dataLength": null,
+				"dataPrecision": 10,
+				"dataScale": 0,
+				"nullable": "Y"
+			}
+		},
+		"name": {
+			"type": "String",
+			"required": true,
+			"length": 512,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "name",
+				"dataType": "varchar",
+				"dataLength": 512,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "N"
+			}
+		},
+		"type": {
+			"type": "String",
+			"required": false,
+			"length": null,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "type",
+				"dataType": "enum('onsite', 'offsite')",
+				"dataLength": null,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"position": {
+			"type": "Number",
+			"required": false,
+			"length": null,
+			"precision": 10,
+			"scale": 0,
+			"mysql": {
+				"columnName": "position",
+				"dataType": "int",
+				"dataLength": null,
+				"dataPrecision": 10,
+				"dataScale": 0,
+				"nullable": "Y"
+			}
+		},
+		"lastTouch": {
+			"type": "Number",
+			"required": false,
+			"length": null,
+			"precision": 3,
+			"scale": 0,
+			"mysql": {
+				"columnName": "last_touch",
+				"dataType": "tinyint",
+				"dataLength": null,
+				"dataPrecision": 3,
+				"dataScale": 0,
+				"nullable": "Y"
+			}
+		},
+		"globalUnique": {
+			"type": "Number",
+			"required": false,
+			"length": 11,
+			"precision": 3,
+			"scale": 0,
+			"mysql": {
+				"columnName": "global_unique",
+				"dataType": "tinyint",
+				"dataLength": 11,
+				"dataPrecision": 3,
+				"dataScale": 0,
+				"nullable": "Y"
+			}
+		},
+		"description": {
+			"type": "String",
+			"required": false,
+			"length": 65535,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "description",
+				"dataType": "text",
+				"dataLength": 65535,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"createdAt": {
+			"type": "Date",
+			"required": false,
+			"length": null,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "created",
+				"dataType": "Date",
+				"dataLength": null,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"updatedAt": {
+			"type": "Date",
+			"required": false,
+			"length": null,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "updated",
+				"dataType": "Date",
+				"dataLength": null,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		}
+	},
+	"validations": [],
+	"relations": {
+		"OpNumber": {
+			"type": "hasMany",
+			"model": "OpNumber",
+			"foreignKey": "tracking_sourceId"
+		},
+		"Customer": {
+			"type": "belongsTo",
+			"model": "Customer",
+			"foreignKey": "customerId"
+		}
+	},
+	"acls": [
+		{
+			"principalType": "ROLE",
+			"principalId": "$authenticated",
+			"permission": "ALLOW",
+			"property": "*"
+		},
+		{
+			"accessType": "*",
+			"principalType": "ROLE",
+			"principalId": "Administrator",
+			"permission": "ALLOW"
+		},
+		{
+			"accessType": "*",
+			"principalType": "ROLE",
+			"principalId": "$everyone",
+			"permission": "DENY"
+		}
+	],
+	"methods": {}
+}

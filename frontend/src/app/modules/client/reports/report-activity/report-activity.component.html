@@ -1,0 +1,293 @@
+<p-blockUI [blocked]="blockContent">
+</p-blockUI>
+<p-blockUI [blocked]="isLoading">
+</p-blockUI>
+
+<div class="fixed-position" id="top_fixed_panel">
+  <h4 class="page_title">Activity Report</h4>
+  <div class="card filter_card">
+    <div class="grid">
+      <div class="col">
+        <div class="grid">
+          <div class="col-fixed flex align-items-center {{isCalendar1Showing || isCalendar2Showing ? 'disable_event_control' : ''}}">
+            <span class="p-float-label">
+              <p-calendar
+                [locale]="datePickerLocale"
+                selectionMode="range"
+                [readonlyInput]="true"
+                [(ngModel)]="selectedDate"
+                [dateFormat]="datePickerFormat"
+                [showIcon]="true"
+                [numberOfMonths]="2"
+                dataType="string"
+                #calendar1
+                styleClass="date_range"
+                panelStyleClass="date_range_panel"
+                (onShow)="onShowDateRangePicker($event)"
+                (onClose)="onCloseDateRangePicker($event)"
+              >
+                <ng-template pTemplate="header">
+                    <div class="calendar-header pt-3 pr-5 pl-2">
+                        <button pButton pRipple type="button" (click)="onClickToday()" label="Today" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickYesterday()" label="Yesterday" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickThisWeek()" label="This Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickLastWeek()" label="Last Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickThisMonth()" label="This Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickLastMonth()" label="Last Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickApply()" label="Apply" class="mt-2 p-button-sm p-button-raised p-button-primary w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickCancel()" label="Cancel" class="p-button-sm p-button-raised p-button-warning w-full mb-2"></button>
+                    </div>
+                </ng-template>
+              </p-calendar>
+              <label>Date Range</label>
+            </span>
+          </div>
+          <div class="col-fixed flex align-items-center {{isCalendar1Showing || isCalendar2Showing ? 'disable_event_control' : ''}}" *ngIf="selectedType=='Compare'">
+            <span class="mr-3">:</span>
+            <span class="p-float-label">
+              <p-calendar
+                selectionMode="range"
+                [disabled]="isCompareBySource"
+                [readonlyInput]="true"
+                [(ngModel)]="selectedCompareDate"
+                [dateFormat]="datePickerFormat"
+                [showIcon]="true"
+                [numberOfMonths]="2"
+                styleClass="date_range"
+                panelStyleClass="date_range_panel"
+                (onShow)="onShowDateRangePicker2($event)"
+                (onClose)="onCloseDateRangePicker2($event)"
+                #calendar2
+              >
+                  <ng-template pTemplate="header">
+                      <div class="calendar-header pt-3 pr-5 pl-2">
+                          <button pButton pRipple type="button" (click)="onClickCompareToday()" label="Today" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                          <button pButton pRipple type="button" (click)="onClickCompareYesterday()" label="Yesterday" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                          <button pButton pRipple type="button" (click)="onClickCompareThisWeek()" label="This Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                          <button pButton pRipple type="button" (click)="onClickCompareLastWeek()" label="Last Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                          <button pButton pRipple type="button" (click)="onClickCompareThisMonth()" label="This Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                          <button pButton pRipple type="button" (click)="onClickCompareLastMonth()" label="Last Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickCompareApply()" label="Apply" class="mt-2 p-button-sm p-button-raised p-button-primary w-full mb-2"></button>
+                        <button pButton pRipple type="button" (click)="onClickCompareCancel()" label="Cancel" class="p-button-sm p-button-raised p-button-warning w-full mb-2"></button>
+                      </div>
+                  </ng-template>
+              </p-calendar>
+              <label>Date Range to Compare</label>
+            </span>
+          </div>
+          <div class="col-fixed flex align-items-center {{isCalendar1Showing || isCalendar2Showing ? 'disable_event_area' : ''}}" *ngIf="selectedType=='Compare'">
+            <p-checkbox name="by_source" [binary]="true" [(ngModel)]="isCompareBySource" (onChange)="onChangeCompareMethod($event)" inputId="by_source" label="By Source"></p-checkbox>
+          </div>
+          <div class="col filter_statistics" *ngIf="activityReportTitle!=''">
+            <h5 class="text-center">{{activityReportTitle}}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-fixed flex align-items-center text-right {{isCalendar1Showing || isCalendar2Showing ? 'disable_event_area' : ''}}">
+        <button pButton pRipple *ngIf="selectedType!='Compare'" label="Export" class="p-button-secondary mt-2 ml-1" icon="pi pi-cloud-download" (click)="onExport()"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card fixed-margin {{isCalendar1Showing || isCalendar2Showing ? 'disable_event_area' : ''}}">
+  <div class="grid">
+    <div class="lg:col-2 col-12 md:col-6 p-fluid">
+      <span class="p-float-label">
+        <p-dropdown id="dropdown3" [options]="types" [(ngModel)]="selectedTypes" (onChange)="onChangeType($event)" [autoDisplayFirst]="true" optionLabel="value"></p-dropdown>
+        <label>Mode</label>
+      </span>
+    </div>
+    <div class="lg:col-3 col-12 md:col-6 p-fluid">
+      <p-multiSelect [options]="legends" [(ngModel)]="selectedLegends" [selectionLimit]="isCompareBySource ? 2 : null" (onPanelHide)="onChangeLegends('legend')" [filter]="true" [maxSelectedLabels]="2" [displaySelectedLabel]="false" [defaultLabel]="legendLabel" filterBy="label" optionLabel="label" class="p-component-full"></p-multiSelect>
+    </div>
+    <div class="lg:col-4 col-12 md:col-8 p-fluid">
+      <table *ngIf="activityReportTitle!=''" class="statistics">
+        <tbody>
+        <tr>
+          <td class="text-center">
+            <p>Total Calls</p>
+            <h6>{{mainData.summary?.total_calls | number: '0.0-10'}}<span *ngIf="selectedType=='Compare' && compareData.summary?.total_calls">&nbsp;:&nbsp;{{compareData.summary?.total_calls | number: '0.0-10'}}</span></h6>
+          </td>
+          <td class="text-center">
+            <p>Total Time</p>
+            <h6>{{mainData.summary?.total_time | number: '0.0-10'}}<span *ngIf="selectedType=='Compare' && compareData.summary?.total_time">&nbsp;:&nbsp;{{compareData.summary?.total_time | number: '0.0-10'}}</span></h6>
+          </td>
+          <td class="text-center">
+            <p>Avg Time</p>
+            <h6>{{mainData.summary?.avg_time | fixedTime}}<span *ngIf="selectedType=='Compare' && compareData.summary?.avg_time">&nbsp;:&nbsp;{{compareData.summary?.avg_time | fixedTime}}</span></h6>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="lg:col-3 col-12 md:col-4 text-right">
+      <span class="p-buttonset">
+        <button pButton label="Hour" class="p-button-chartmode {{selectedGraphType=='H' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[0]" (click)="onSetFilter('H')"></button>
+        <button pButton label="Day" class="p-button-chartmode {{selectedGraphType=='D' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[1]" (click)="onSetFilter('D')"></button>
+        <button pButton label="Week" class="p-button-chartmode {{selectedGraphType=='W' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[2]" (click)="onSetFilter('W')"></button>
+        <!--        <button pButton label="Range" *ngIf="isGraphTypeChanged" class="{{selectedGraphType=='R' ? 'p-button-warning' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[4]" (click)="onSetFilter('R')"></button>-->
+        <button pButton label="Month" class="p-button-chartmode {{selectedGraphType=='M' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[3]" (click)="onSetFilter('M')"></button>
+      </span>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col">
+    </div>
+    <div class="col-fixed flex justify-content-end">
+      <button pButton title="Tooltip" class="p-button-info mr-1" style="height: 32px;" icon="pi {{includeDataLabel ? 'pi-comments' : 'pi-comment'}}" styleClass="p-button-sm" (click)="onTooltip()"></button>
+      <button pButton title="Stacked" class="p-button-primary mr-2" [disabled]="selectedType=='Compare'" style="height: 32px;" icon="pi {{isStacked ? 'pi-sliders-v' : 'pi-pause'}}" styleClass="p-button-sm" (click)="onStacked()"></button>
+      <p-selectButton [options]="chartTypes" [disabled]="isDisabledSelectingChartType" [(ngModel)]="chartType" (onOptionClick)="onSetChart($event)">
+        <ng-template let-item>
+          <i [class]="item.icon"></i>
+        </ng-template>
+      </p-selectButton>
+    </div>
+  </div>
+
+  <div class="grid mt-3">
+    <div class="col-12 flex justify-content-center mb-3" *ngIf="isLegend">
+      <div class="legend legend_1"></div>
+      <span class="legend_title mr-3">{{legendTitle1}}</span>
+      <div class="legend legend_2"></div>
+      <span class="legend_title">{{legendTitle2}}</span>
+    </div>
+    <p-chart #chart *ngIf="selectedType!='Compare'" [type]="chartType" [data]="chartData" [options]="chartOptions" [plugins]="chartPlugins" style="width:100%" height="50vh" (onDataSelect)="onClickGraph($event)"></p-chart>
+    <p-chart #compareChart *ngIf="selectedType=='Compare'" [type]="chartType" [data]="chartCompareData" [options]="chartCompareOptions" [plugins]="chartPlugins" style="width:100%" height="50vh" (onDataSelect)="onClickCompareGraph($event)"></p-chart>
+  </div>
+</div>
+
+<div class="grid mb-5 {{isCalendar1Showing || isCalendar2Showing ? 'disable_event_area' : ''}}">
+  <div class="col-12 {{selectedType=='Compare' ? 'md:col-6' : 'md:col-12'}}">
+    <p-card [header]="filterActivityTitle" class="{{selectedType=='Compare' ? 'period-1' : ''}}">
+      <p-table  [value]="mainData.data" [scrollable]="true" scrollHeight="500px" responsiveLayout="stack" responsive="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="{{selectedType=='Compare' ? 'period-1' : ''}}">Tracking Source</th>
+            <!--            <th scope="col">Period Unique</th>-->
+            <th class="{{selectedType=='Compare' ? 'period-1' : ''}}" scope="col">Total Time
+              <small>(minute)</small>
+            </th>
+            <th class="{{selectedType=='Compare' ? 'period-1' : ''}}" scope="col">Total</th>
+            <th class="{{selectedType=='Compare' ? 'period-1' : ''}}" class="action_td"><button pButton title="Tooltip" class="p-button-info mr-2" style="height: 32px;" icon="pi pi-refresh" styleClass="p-button-sm" (click)="onRefreshMainData()"></button></th>
+          </tr>
+          <tr style="font-size: 14px">
+            <th class="table_font_size">
+              <div>{{mainData.stats?.name}}</div>
+            </th>
+            <!--            <th class="table_font_size">{{mainData.stats?.overall_period_unique}}</th>-->
+            <th class="table_font_size"><span>{{mainData.stats?.avg_time | fixedTime}} <sup>avg</sup></span><br/>
+              <small style="font-weight: bold !important;">{{mainData.stats?.total_time| number : '0.0-10'}}
+                <sup>total</sup></small>
+            </th>
+            <th class="table_font_size">{{mainData.stats?.total_calls | number : '0.0-10'}}</th>
+            <th class="action_td"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-data>
+          <tr (click)="onClickData(data.name)">
+            <td>
+              <span class="p-column-title">Tracking Source</span>
+              <div class="inline-block">
+                <span class="item-percentage" *ngIf="selectedType!='Compare'" [style.background-color]="data.color">{{data.percent | ceilWithMinimum: 1}}<small>%</small></span>&nbsp;&nbsp;
+                <span class="item-percentage" *ngIf="selectedType=='Compare'">{{data.percent | ceilWithMinimum: 0}}<small>%</small></span>&nbsp;&nbsp;
+                <a (click)="onClickData(data.name)">
+                  <strong>{{data.name}}</strong><br>
+                </a>
+              </div>
+            </td>
+            <!--
+                        <td>
+                          <span class="p-column-title">Period Unique</span>
+                          <div class="inline-block">
+                            <b class="table_font_size">{{data.period_unique}}</b><br>
+                            <small class="table_font_size_small">{{data.period_unique | calcPeriodUniquePerc: mainData.stats?.overall_period_unique}}%</small>
+                          </div>
+                        </td>
+            -->
+            <td>
+              <span class="p-column-title">Total Time<small>(minute)</small></span>
+              <div class="inline-block">
+                <span class="table_font_size">{{data.avg_time}} <sup>avg</sup></span><br>
+                <small class="table_font_size_small">{{data.total_time | number: '0.0-10'}} <sup>total</sup></small>
+              </div>
+            </td>
+            <td>
+              <span class="p-column-title">Total</span>
+              <div class="inline-block">
+                <b class="table_font_size">{{data.total_calls | number: '0.0-10'}}</b><br>
+                <small class="table_font_size_small">{{data.percent}}%</small>
+              </div>
+            </td>
+            <td class="action_td"></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+
+  <div class="col-12 md:col-6" *ngIf="selectedType=='Compare'">
+    <p-card [header]="filterActivityTitle1" class="{{selectedType=='Compare' ? 'period-2' : ''}}">
+      <p-table  [value]="compareData.data" [scrollable]="true" scrollHeight="500px" responsiveLayout="stack" responsive="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="{{selectedType=='Compare' ? 'period-2' : ''}}">Tracking Source</th>
+            <!--            <th scope="col">Period Unique</th>-->
+            <th class="{{selectedType=='Compare' ? 'period-2' : ''}}" scope="col">Total Time
+              <small>(minute)</small>
+            </th>
+            <th class="{{selectedType=='Compare' ? 'period-2' : ''}}" scope="col">Total</th>
+            <th class="action_td"><button pButton title="Tooltip" class="p-button-warning mr-2" style="height: 32px;" icon="pi pi-refresh" styleClass="p-button-sm" (click)="onRefreshCompareData()"></button></th>
+          </tr>
+          <tr style="font-size: 14px">
+            <th class="table_font_size">
+              <div>{{compareData.stats?.name}}</div>
+            </th>
+            <!--            <th class="table_font_size">{{compareData.stats?.overall_period_unique}}</th>-->
+            <th class="table_font_size"><span>{{compareData.stats?.avg_time | fixedTime}} <sup>avg</sup></span><br/>
+              <small style="font-weight: bold !important;">{{compareData.stats?.total_time| number : '0.0-10'}}
+                <sup>total</sup></small>
+            </th>
+            <th class="table_font_size">{{compareData.stats?.total_calls | number : '0.0-10'}}</th>
+            <th class="action_td"></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-data>
+          <tr (click)="onClickCompareData(data.name)">
+            <td>
+              <span class="p-column-title">Tracking Source</span>
+              <div class="inline-block">
+                <span class="item-percentage" >{{data.percent | ceilWithMinimum: 0}}<small>%</small></span>&nbsp;&nbsp;
+                <a (click)="onClickData(data.name)">
+                  <strong>{{data.name}}</strong><br>
+                </a>
+              </div>
+            </td>
+            <!--<td>
+              <span class="p-column-title">Period Unique</span>
+              <div class="inline-block">
+                <b class="table_font_size">{{data.period_unique}}</b><br>
+                <small class="table_font_size_small">{{data.period_unique | calcPeriodUniquePerc: mainData.stats?.overall_period_unique}}%</small>
+              </div>
+            </td>-->
+            <td>
+              <span class="p-column-title">Total Time<small>(minute)</small></span>
+              <div class="inline-block">
+                <span class="table_font_size">{{data.avg_time}} <sup>avg</sup></span><br>
+                <small class="table_font_size_small">{{data.total_time | number: '0.0-10'}} <sup>total</sup></small>
+              </div>
+            </td>
+            <td>
+              <span class="p-column-title">Total</span>
+              <div class="inline-block">
+                <b class="table_font_size">{{data.total_calls | number: '0.0-10'}}</b><br>
+                <small class="table_font_size_small">{{data.percent}}%</small>
+              </div>
+            </td>
+            <td class="action_td"></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+</div>

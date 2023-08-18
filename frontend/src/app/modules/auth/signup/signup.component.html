@@ -1,0 +1,237 @@
+<p-blockUI [blocked]="loading">
+</p-blockUI>
+
+<div class="grid justify-content-center p-2 lg:p-0" style="min-width:80%;">
+  <div class="col-12 mt-5 xl:mt-0 text-center">
+    <!--      <img src="assets/demo/images/notfound/logo-blue.svg" alt="Sakai logo" class="mb-5" style="width:81px; height:60px;">-->
+    <img src="assets/images/logo-callmetrics.svg" alt="eCMS logo" class="mb-5" style="height:60px;">
+  </div>
+
+  <div class="col-12 lg:col-8 md:col-10">
+    <div class="card">
+      <p-steps [model]="stepItems" [(activeIndex)]="stepIndex" (activeIndexChange)="next()" styleClass="mt-5" [readonly]="true"></p-steps>
+      <div class="grid">
+        <div class="col-12 md:col-6 flex">
+          <div class="p-fluid">
+            <div class="grid">
+              <div class="col-12 " *ngIf="this.stepIndex == 0">
+                <h4>First things first</h4>
+                <label class="block text-md mb-5">Let'us know your contact informations.</label>
+                <form [formGroup]="emailForm">
+                  <span class="p-float-label">
+                    <input type="email" class="w-full" name="username" id="username" pInputText class="{{submitted && getEmailForm.username.errors ? 'ng-invalid ng-dirty' : ''}}"
+                           aria-describedby="usernameHelp" autocomplete="off" formControlName="username" style="padding:1rem;">
+                    <label for="username" class="" >Username</label>
+                  </span>
+                  <div *ngIf="submitted && getEmailForm.username.errors">
+                    <div *ngIf="getEmailForm.username.errors.required" class="p-error">Username is required</div>
+                  </div>
+
+                  <span class="p-float-label mt-3">
+                    <input type="email" class="w-full" name="email" id="email" pInputText class="{{submitted && getEmailForm.email.errors ? 'ng-invalid ng-dirty' : ''}}"
+                           aria-describedby="emailHelp" autocomplete="off" formControlName="email" style="padding:1rem;">
+                    <label for="email" class="" >Email address</label>
+                  </span>
+                  <!--                <label for="email">Email address</label>-->
+                  <!--                <input type="email" class="" name="email" id="email" placeholder="Enter email" autocomplete="off" formControlName="email" />-->
+                  <div *ngIf="submitted && getEmailForm.email.errors">
+                    <div *ngIf="getEmailForm.email.errors.required" class="p-error">Email is required</div>
+                    <div *ngIf="getEmailForm.email.errors.email" class="p-error">Email must be a valid email address</div>
+                  </div>
+                  <br/>
+                  <h6 class=" font-12">Let's get started by verifying your email address.</h6>
+                  <h6 class=" font-12">You will receive an email shortly with a code required for the next step.</h6>
+                </form>
+              </div>
+
+              <div id="check-email" class="col-12 " *ngIf="this.stepIndex == 1">
+                <h4>Check your inbox</h4>
+                <div class="">
+                  <form [formGroup]="codeForm">
+                    <div class="mb-2 "><label for="code">We just shared a code with you - please enter it below</label></div>
+                    <input type="text" class="w-full" id="code" placeholder="Enter conformation code" pInputText class="{{ submitted && getCodeForm.code.errors ? 'ng-invalid ng-dirty' : ''}}"
+                           autocomplete="off" formControlName="code" />
+                    <div *ngIf="submitted && getCodeForm.code.errors">
+                      <div *ngIf="getCodeForm.code.errors.required" class="p-error">Verification code is required</div>
+                    </div>
+                    <br/>
+                    <h6 class=" font-12">Didn't get the code?</h6>
+                    <p><a class=" " (click)="resendCode()">Click here</a><span>&nbsp;&nbsp;to resend</span></p>
+                  </form>
+                </div>
+              </div>
+
+              <div id="profile" class="col-12 " *ngIf="this.stepIndex == 2">
+                <form [formGroup]="profileForm">
+                  <h4>Tell us about yourself</h4>
+                  <div class="grid">
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="text" class="" id="firstName" pInputText autocomplete="off" formControlName="firstName" class="{{submitted && getProfileForm.firstName.errors ? 'ng-invalid ng-dirty' : ''}}" />
+                        <label for="firstName">First Name</label>
+                      </span>
+                      <div *ngIf="submitted && getProfileForm.firstName.errors">
+                        <div *ngIf="getProfileForm.firstName.errors.required" class="p-error">First Name is required</div>
+                      </div>
+                    </div>
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="text" class="w-full" id="lastName" pInputText autocomplete="off" formControlName="lastName" class="{{submitted && getProfileForm.lastName.errors ? 'ng-invalid ng-dirty' : ''}}" />
+                        <label for="lastName">Last Name</label>
+                      </span>
+                      <div *ngIf="submitted && getProfileForm.lastName.errors">
+                        <div *ngIf="getProfileForm.lastName.errors.required" class="p-error">Last Name is required</div>
+                      </div>
+                    </div>
+
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="password" id="password" formControlName="password"
+                               class="w-full" pInputText autocomplete="off" class="{{submitted && getProfileForm.password.errors ? 'ng-invalid ng-dirty' : ''}}" />
+                        <label for="password">Password</label>
+                      </span>
+                      <div *ngIf="submitted && getProfileForm.password.errors">
+                        <div *ngIf="getProfileForm.password.errors.required" class="p-error">Password is required</div>
+                      </div>
+                    </div>
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="password" id="passwordConfirm" formControlName="confirm_password"
+                               class="w-full" pInputText autocomplete="off" class="{{submitted && getProfileForm.confirm_password.errors ? 'ng-invalid ng-dirty' : ''}}"/>
+                        <label for="passwordConfirm">Password Confirmation</label>
+                      </span>
+                      <div *ngIf="submitted && getProfileForm.confirm_password.errors">
+                        <div *ngIf="getProfileForm.confirm_password.errors.required" class="p-error">Password Confirm is required</div>
+                        <div *ngIf="getProfileForm.confirm_password.errors.confirmedValidator" class="p-error">Password and Confirm Password must be match.</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <h4 class="mt-4">Tell us about your business</h4>
+                  <div class="grid">
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="text" id="businessName" formControlName="business_name" class="{{submitted && getProfileForm.business_name.errors ? 'ng-invalid ng-dirty' : ''}}"
+                               class="w-full" pInputText autocomplete="off"/>
+                        <label for="businessName">Your Business Name</label>
+                      </span>
+                      <div *ngIf="submitted && getProfileForm.business_name.errors">
+                        <div *ngIf="getProfileForm.business_name.errors.required" class="p-error">Business Name is required</div>
+                      </div>
+                    </div>
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <p-inputMask id="phoneNumber" class="w-full" formControlName="business_number" mask="(999) 999-9999" [unmask]="false"></p-inputMask>
+                        <label for="phoneNumber">Your Business Phone Number</label>
+                      </span>
+                    </div>
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="text" id="businessWebsite" formControlName="business_website"
+                               class="w-full" pInputText autocomplete="off"/>
+                        <label for="businessWebsite">Your Business Website</label>
+                      </span>
+                    </div>
+                    <div class="col-12 ">
+                      <span class="p-float-label">
+                        <input type="text" id="businessAddress" formControlName="business_address"
+                               class="w-full" pInputText autocomplete="off"/>
+                        <label for="businessAddress">Your Business Address</label>
+                      </span>
+                    </div>
+                    <div class="col-12">
+                      <span class="p-float-label">
+                        <p-dropdown id="bussiness_industry" formControlName="business_industry" [options]="businessIndustries" [autoDisplayFirst]="false"></p-dropdown>
+                        <label for="bussiness_industry">Your Business Industry</label>
+                      </span>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div id="checkout" class="col-12 " *ngIf="this.stepIndex == 3">
+                <form [formGroup]="checkoutForm" [elementsOptions]="elementsOptions" ngxStripeCardGroup>
+                  <h4>One Last Step</h4>
+                  <div class="mb-2 "><label for="code">Submit your payment information to get started</label></div>
+                  <div class="grid">
+                    <div class="col-12 mt-3">
+                      <span class="p-float-label">
+                        <input type="text" id="nameOnCard" formControlName="card_name" [disabled]="!elementsOptions?.clientSecret"
+                               class="w-full" pInputText autocomplete="off"/>
+                        <label for="nameOnCard">Name on Card</label>
+                      </span>
+                      <div *ngIf="submitted && getCheckoutForm.card_name.errors">
+                        <div *ngIf="getCheckoutForm.card_name.errors.required" class="p-error">Name is required</div>
+                      </div>
+                    </div>
+
+                    <div class="col-12 ">
+                      <ng-container *ngIf="elementsOptions?.clientSecret as clientSecret">
+                        <ngx-stripe-payment [options]="cardOptions" [clientSecret]="clientSecret">
+                        </ngx-stripe-payment>
+                      </ng-container>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              <div id="end" class="col-12 " *ngIf="this.stepIndex == 4">
+                <div class="text-center">
+                  <h4>Congratulation!</h4>
+                  <p>You have completed the registration.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-6 flex">
+          <div class="p-fluid">
+            <h5>SUMMARY</h5>
+            <p-dropdown [options]="products" [(ngModel)]="selectedProduct" (onChange)="selPriceProduct($event)"></p-dropdown>
+
+            <div class="justify-content-between mt-2" style="display: flex;">
+              <h5>Monthly Plan Fee</h5>
+              <label id="plan_sel">{{plan_sel}}</label>
+            </div>
+            <label class="block  font-12">OFFER: No monthly plan fee for 60 days*</label><br>
+            <div class="flex justify-content-between mt-2">
+              <h5>Starting Available Balance</h5>
+              <div class="col-3 hidden-xs"></div>
+              <div class="col-9 md:col-4">
+                <div class="styled-select text-gray-400">
+                  <p-dropdown [options]="prices" [(ngModel)]="selectedPrice" (onChange)="onBalanceChange($event)"></p-dropdown>
+                </div>
+              </div>
+            </div>
+            <label class="block  font-12 mt-5">
+              {{description}}
+            </label>
+            <div class="mt-2 line" style="height: 3px"></div>
+            <div class="justify-content-between " style="display: flex;">
+              <h5>Charged Today</h5>
+              <p id="price_sel">${{balance}}</p>
+            </div>
+            <div class="mt-2 line" style="height: 3px"></div>
+            <div class="grid">
+              <div class="col-12 ">
+                <button pButton pRipple type="button" label="Continue"
+                        class="p-button-secondary mr-2 mb-2"
+                        *ngIf="!elementsOptions?.clientSecret" [disabled]="loading" (click)="next()"
+                        style="width: 150px; float: right"></button>
+                <button  pButton pRipple type="button"
+                         class="p-button-secondary mr-2 mb-2"
+                         *ngIf="elementsOptions?.clientSecret as clientSecret" [disabled]="(!elementsOptions?.clientSecret) || loading"
+                        (click)="pay()" style="width: 150px; float: right" label="Checkout" ></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bottom_login text-center">
+        <p>Do you already have an account?</p>
+        <a class="btn btn-primary" [routerLink]="['/login']" href="javascript:void(0)">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>

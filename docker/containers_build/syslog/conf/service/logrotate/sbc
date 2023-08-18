@@ -1,0 +1,15 @@
+/var/log/sbc.log
+/var/log/opensips/*.log
+{
+        create
+        rotate 5
+        daily
+        missingok
+        compress
+        delaycompress
+        postrotate
+                /usr/sbin/service syslog-ng reload > /dev/null 2>&1
+        endscript
+}
+
+

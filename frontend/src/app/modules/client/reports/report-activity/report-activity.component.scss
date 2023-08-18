@@ -1,0 +1,134 @@
+.item-percentage {
+  padding-left: 2px;
+  padding-right: 2px;
+}
+.page_title i {
+  font-size: 14px;
+}
+
+.table_font_size {
+  font-size: 14px;
+}
+.table_font_size_small {
+  font-size: 12px;
+}
+
+:host ::ng-deep .date_range.p-calendar {
+  .date_range_panel.p-datepicker {
+    width: 62rem;
+    display: flex;
+    .calendar-header {
+      flex: 3;
+    }
+
+    .p-datepicker-group-container {
+      flex: 9;
+      .p-disabled, .p-component:disabled {
+        opacity: 1;
+      }
+      .p-datepicker-other-month {
+        .p-disabled, .p-component:disabled {
+          opacity: 0.38;
+        }
+      }
+    }
+  }
+}
+
+:host ::ng-deep .p-blockui-document.p-component-overlay {
+  z-index: 99999 !important;
+}
+
+.statistics {
+  width: 100%;
+}
+.statistics td {
+  padding: 0px 8px;
+  padding: 0px 8px;
+}
+
+.action_td {
+  width: 48px;
+}
+.statistics p {
+  margin: 0px;
+  margin: 0px;
+}
+.statistics h5, .statistics h6{
+  margin-top: 6px;
+  margin-bottom: 0px;
+  margin-bottom: 0px;
+}
+
+.period-1 {
+  color: #42A5F5 !important;
+}
+.period-2 {
+  color: #FFA726 !important;
+}
+
+:host ::ng-deep .p-card-title {
+  font-size: 16px !important;
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .period-1 .p-card-title {
+  color: #42A5F5 !important;
+}
+
+:host ::ng-deep .period-2 .p-card-title {
+  color: #FFA726 !important;
+}
+
+:host ::ng-deep .p-button-chartmode.p-button-primary:not(:disabled) {
+  background: #9d81a1 !important;
+}
+
+:host ::ng-deep tbody tr td {
+  cursor: pointer;
+}
+
+.legend {
+  width: 40px;
+  height: 16px;
+  margin-right: 4px;
+}
+.legend_1 {
+  background: #42A5F5
+}
+.legend_2 {
+  background: #FFA726;
+}
+
+.fixed-position {
+  position: fixed;
+  z-index: 100;
+  width: calc(100% - 4rem);
+  background-color: transparent;
+  padding-bottom: 0rem
+}
+
+.page_title {
+  margin-bottom: 0 !important;
+  padding-bottom: 2rem !important;
+  background-color: var(--surface-ground) !important;
+}
+
+.fixed-margin {
+  margin-top: 226px;
+}
+
+.filter_statistics {
+  h5 {
+    font-size: 20px;
+    white-space:pre-wrap;
+    margin-bottom: 0;
+  }
+}
+
+.disable_event_area {
+  pointer-events: none;
+}
+:host ::ng-deep .disable_event_control .date_range.p-calendar>input, :host ::ng-deep .disable_event_control .date_range.p-calendar>button {
+  pointer-events: none;
+}

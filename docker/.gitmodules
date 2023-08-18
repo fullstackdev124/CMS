@@ -1,0 +1,6 @@
+[submodule "containers_build/backend/content/ecms-backend"]
+	path = containers_build/backend/content/ecms-backend
+	url = https://git.techfusion.it/call-metrics/ecms-backend.git
+[submodule "containers_build/frontend/content/ecms-frontend"]
+	path = containers_build/frontend/content/ecms-frontend
+	url = https://git.techfusion.it/call-metrics/ecms-frontend.git

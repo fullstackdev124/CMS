@@ -1,0 +1,17 @@
+{
+  "db": {
+    "name": "db",
+    "host": "{{HOST_IP}}",
+    "port": "{{DB_PORT}}",
+    "user": "{{DB_USER}}",
+    "password": "{{DB_PASS}}",
+    "database": "{{DB_NAME}}",
+    "url": "",
+    "debug": false,
+    "socketPath": "",
+    "lazyConnect": true,
+    "connector": "mysql",
+    "connectTimeout": 120000,
+    "connectionTimeout": 120000
+  }
+}

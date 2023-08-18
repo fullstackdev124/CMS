@@ -1,0 +1,8 @@
+.auto_complete_item {
+  margin: 0
+}
+
+:host ::ng-deep .p-button-back {
+  position: absolute !important;
+  top: 16px !important; right: 36px;
+}

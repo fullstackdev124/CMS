@@ -1,0 +1,33 @@
+:host ::ng-deep .custom {
+  .dropdown-menu {
+    background: var(--surface-50);
+    .search-container {
+      input {
+        background: var(--surface-0);
+        font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+        font-size: 1rem;
+        transition: background-color 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, background-size 0.2s cubic-bezier(0.64, 0.09, 0.08, 1);
+        appearance: none;
+        border-radius: 4px;
+        padding: 1rem;
+        font-weight: normal;
+        &:enabled:focus {
+          box-shadow: inset 0 0 0 1px #9FA8DA, inset 0 0 0 1px #9FA8DA, inset 0 0 0 1px #9FA8DA, inset 0 0 0 1px #9FA8DA;
+          outline: 0 none;
+          outline-offset: 0;
+          border-color: #9FA8DA;
+        }
+      }
+    }
+    ul.iti__country-list {
+      background: transparent;
+      li span {
+        color: var(--text-color);
+      }
+    }
+  }
+}
+
+.country-item {
+  display: flex;
+}

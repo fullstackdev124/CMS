@@ -1,0 +1,234 @@
+<p-blockUI [blocked]="isLoading">
+  <p-progressSpinner></p-progressSpinner>
+</p-blockUI>
+
+<div class="fixed-position" id="top_fixed_panel">
+  <h4 class="page_title">Overview</h4>
+
+  <div class="card">
+    <div class="grid">
+      <div class="col-fixed {{isCalendar1Showing ? 'disable_event_control' : ''}}">
+        <!--      <p-toggleButton [(ngModel)]="filterPanelOpened" class="mr-2" onLabel="Filter" offLabel="Filter" onIcon="pi pi-filter-fill" offIcon="pi pi-filter"></p-toggleButton>-->
+
+        <span class="p-float-label">
+        <p-calendar
+          #calendar
+          [locale]="datePickerLocale"
+          selectionMode="range"
+          [readonlyInput]="true"
+          [(ngModel)]="selectedDate"
+          [dateFormat]="datePickerFormat"
+          [showIcon]="true"
+          [numberOfMonths]="2"
+          styleClass="date_range"
+          panelStyleClass="date_range_panel"
+          (onShow)="onShowDateRangePicker($event)"
+          (onClose)="onCloseDateRangePicker($event)"
+        >
+          <ng-template pTemplate="header">
+              <div class="calendar-header pt-3 pr-5 pl-2">
+                  <button pButton pRipple type="button" (click)="onClickToday()" label="Today" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickYesterday()" label="Yesterday" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickThisWeek()" label="This Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickLastWeek()" label="Last Week" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickThisMonth()" label="This Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickLastMonth()" label="Last Month" class="p-button-sm p-button-raised p-button-plain p-button-text w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickApply()" label="Apply" class="mt-2 p-button-sm p-button-raised p-button-primary w-full mb-2"></button>
+                  <button pButton pRipple type="button" (click)="onClickCancel()" label="Cancel" class="p-button-sm p-button-raised p-button-warning w-full mb-2"></button>
+              </div>
+          </ng-template>
+        </p-calendar>
+        <label>Date Range</label>
+      </span>
+      </div>
+      <div class="col filter_statistics" *ngIf="activityReportTitle!=''">
+        <h5 class="text-center" style="white-space:pre-wrap;">{{activityReportTitle}}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card fixed-margin {{isCalendar1Showing ? 'disable_event_area' : ''}}">
+  <div class="grid">
+    <div class="col-12 text-right">
+      <span class="p-buttonset">
+        <button pButton label="Hour" class="{{selectedGraphType=='H' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[0]" (click)="onSetFilter('H')"></button>
+        <button pButton label="Day" class="{{selectedGraphType=='D' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[1]" (click)="onSetFilter('D')"></button>
+        <button pButton label="Week" class="{{selectedGraphType=='W' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[2]" (click)="onSetFilter('W')"></button>
+        <button pButton label="Month" class="{{selectedGraphType=='M' ? 'p-button-secondary' : 'p-button-primary'}}" [disabled]="disabledGraphTypes[3]" (click)="onSetFilter('M')"></button>
+      </span>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="col-4">
+    </div>
+    <div class="col-8 text-right">
+      <p-selectButton [options]="chartTypes" name="chartType" [(ngModel)]="chartType" (onOptionClick)="onSetChart($event)">
+        <ng-template let-item>
+          <i [class]="item.icon"></i>
+        </ng-template>
+      </p-selectButton>
+    </div>
+  </div>
+  <div class="grid mt-3">
+    <div class="col-2 xs:col-4">
+      <h6>{{top.total}}</h6>
+      <p>Total</p>
+    </div>
+    <div class="col-2 xs:col-4">
+      <h6>{{top.contact}}</h6>
+      <p>Contacts</p>
+    </div>
+    <div class="col-2 xs:col-4">
+      <h6>{{top.avgTime | fixedTime}}</h6>
+      <p>Avg Time</p>
+    </div>
+    <div class="col-2 xs:col-4">
+      <h6>{{top.source}}</h6>
+      <p>Top Source</p>
+    </div>
+    <div class="col-2 xs:col-4">
+      <h6>{{top.day}}</h6>
+      <p>Top Day</p>
+    </div>
+    <div class="col-2 xs:col-4">
+      <h6>{{top.hour}}</h6>
+      <p>Top Hour</p>
+    </div>
+  </div>
+  <div class="grid">
+    <p-chart [type]="chartType" [data]="totalData" [options]="totalOptions" style="width:100%" height="50vh"></p-chart>
+  </div>
+</div>
+
+<div class="grid {{isCalendar1Showing ? 'disable_event_area' : ''}}">
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <h6>Total Calls by Tracking Source</h6>
+      <div class="flex justify-content-center">
+        <p-chart type="pie" [data]="totalCallersData" [options]="totalCallersOption" style="width:100%" height="30vh"></p-chart>
+      </div>
+
+      <p-table [value]="totalCallersTable" [scrollable]="true" scrollHeight="500px" responsiveLayout="stack" responsive="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="bar_column"></th>
+            <th>Source</th>
+            <th>Total Calls</th>
+            <th>Unique Contacts</th>
+            <th>Percent</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr class="has-action" (click)="onClickData(row.source)">
+            <td class="bar_column"><div class="bar" [ngStyle]="{backgroundColor : row.color } "></div></td>
+            <td>{{row.source}}</td>
+            <td>{{row.activity}}</td>
+            <td>{{row.contact}}</td>
+            <td>{{row.percent}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <h6>{{showingMinutesOptions.title}} <a class="p-button-text vs-button" (click)="toggleMinutes()"><i class="pi pi-arrow-circle-left"></i> {{showingMinutesOptions.button}}</a></h6>
+
+      <div class="flex justify-content-center">
+        <p-chart type="pie" [data]="averageDurationCallData" [options]="averageDurationCallOption" style="width:100%" height="30vh"></p-chart>
+      </div>
+
+      <p-table [value]="averageDurationCallTable" [scrollable]="true" scrollHeight="500px" responsiveLayout="stack" responsive="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="bar_column"></th>
+            <th>Source</th>
+            <th *ngIf="!showingMinutesOptions.is">Duration</th>
+            <th *ngIf="!showingMinutesOptions.is">Percent</th>
+            <th *ngIf="showingMinutesOptions.is">0 ∈ 3</th>
+            <th *ngIf="showingMinutesOptions.is">3 ∈ 5</th>
+            <th *ngIf="showingMinutesOptions.is">5 ∈ 15</th>
+            <th *ngIf="showingMinutesOptions.is">> 15</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr class="has-action" (click)="onClickData(row.source)">
+            <td class="bar_column"><div class="bar" [ngStyle]="{backgroundColor : row.color } "></div></td>
+            <td>{{row.source}}</td>
+            <td *ngIf="!showingMinutesOptions.is">{{row.duration}}</td>
+            <td *ngIf="!showingMinutesOptions.is">{{row.percent}}</td>
+            <td *ngIf="showingMinutesOptions.is">{{row.min_0}}</td>
+            <td *ngIf="showingMinutesOptions.is">{{row.min_3}}</td>
+            <td *ngIf="showingMinutesOptions.is">{{row.min_5}}</td>
+            <td *ngIf="showingMinutesOptions.is">{{row.min_15}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <h6>Call Status</h6>
+      <div class="flex justify-content-center">
+        <p-chart type="pie" [data]="callStatusGraphData" [options]="callStatusGraphOption" style="width:100%" height="30vh"></p-chart>
+      </div>
+
+      <p-table [value]="callStatusTable" [scrollable]="true" scrollHeight="500px" responsiveLayout="stack" responsive="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="bar_column"></th>
+            <th>Status</th>
+            <th>Count</th>
+            <th>Percent</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <td class="bar_column"><div class="bar" [ngStyle]="{backgroundColor : row.color } "></div></td>
+            <td>{{row.status}}</td>
+            <td>{{row.count}}</td>
+            <td>{{row.percent}}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-6">
+    <div class="card">
+      <h6>Repeat Vs New Calls</h6>
+      <div class="flex justify-content-center">
+        <p-chart type="pie" [data]="repeatVsNewCallGraphData" [options]="repeatVsNewCallGraphOption" style="width:100%" height="30vh"></p-chart>
+      </div>
+
+      <p-table [value]="repeatVsNewCallTableData" responsiveLayout="stack" responsive="true">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="text-center">Repeat</th>
+            <th class="text-center">New Call</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-row>
+          <tr>
+            <td class="text-center">{{repeat_call_count}} ({{repeat_call_count+new_call_count==0 ? "0.00" : (repeat_call_count/(repeat_call_count+new_call_count)*100).toFixed(2)}}%)</td>
+            <td class="text-center">{{new_call_count}} ({{repeat_call_count+new_call_count==0 ? "0.00" : (new_call_count/(repeat_call_count+new_call_count)*100).toFixed(2)}}%)</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="col-6" *ngIf="false">
+    <div class="card">
+      <h6>Total Repeat Callers by Source of Call</h6>
+    </div>
+  </div>
+  <div class="col-6" *ngIf="false">
+    <div class="card">
+      <h6>Repeat vs. New Callers</h6>
+    </div>
+  </div>
+</div>

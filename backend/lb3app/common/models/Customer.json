@@ -1,0 +1,406 @@
+{
+	"name": "Customer",
+	"options": {
+		"idInjection": false,
+		"mysql": {
+			"schema": "ecms",
+			"table": "customer"
+		}
+	},
+	"scope": {
+		"include": [
+			"ProductVariations"
+		]
+	},
+	"properties": {
+		"id": {
+			"type": "Number",
+			"id": 1,
+			"generated": true,
+			"required": false,
+			"length": null,
+			"precision": 10,
+			"scale": 0,
+			"mysql": {
+				"columnName": "id",
+				"dataType": "int",
+				"dataLength": null,
+				"dataPrecision": 10,
+				"dataScale": 0,
+				"nullable": "Y"
+			}
+		},
+		"enabled": {
+			"type": "Number",
+			"required": false,
+			"length": null,
+			"precision": 3,
+			"scale": 0,
+			"mysql": {
+				"columnName": "enabled",
+				"dataType": "tinyint",
+				"dataLength": null,
+				"dataPrecision": 3,
+				"dataScale": 0,
+				"nullable": "N"
+			}
+		},
+		"firstName": {
+			"type": "String",
+			"required": false,
+			"length": 32,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "firstName",
+				"dataType": "varchar",
+				"dataLength": 32,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"lastName": {
+			"type": "String",
+			"required": false,
+			"length": 32,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "lastName",
+				"dataType": "varchar",
+				"dataLength": 32,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"vatNumber": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "vatNumber",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"companyName": {
+			"type": "String",
+			"required": true,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "companyName",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "N"
+			}
+		},
+		"companyId": {
+			"type": "String",
+			"required": false,
+			"length": 32,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "companyID",
+				"dataType": "varchar",
+				"dataLength": 32,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"contactEmail": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "contactEmail",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"billingEmail": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "billingEmail",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"address": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "address",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"city": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "city",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"state": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "state",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"country": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "country",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"zip": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "zip",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"phone": {
+			"type": "String",
+			"required": false,
+			"length": 255,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "phone",
+				"dataType": "varchar",
+				"dataLength": 255,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"token": {
+			"type": "String",
+			"required": false,
+			"length": 64,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "token",
+				"dataType": "varchar",
+				"dataLength": 64,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"balance": {
+			"type": "Number",
+			"required": false,
+			"length": null,
+			"precision": 12,
+			"scale": null,
+			"mysql": {
+				"columnName": "balance",
+				"dataType": "float",
+				"dataLength": null,
+				"dataPrecision": 12,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"isPostpaid": {
+			"type": "Boolean",
+			"required": false,
+			"default": false,
+			"length": null,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "isPostpaid",
+				"dataType": "Boolean",
+				"dataDefault": false,
+				"dataLength": null,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"currency": {
+			"type": "String",
+			"required": false,
+			"default": "USD",
+			"length": 5,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "currency",
+				"dataType": "varchar",
+				"dataLength": 5,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "N"
+			}
+		},
+		"settings": {
+			"type": "String",
+			"required": false,
+			"length": null,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "settings",
+				"dataType": "json",
+				"dataLength": null,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		},
+		"accounting_type": {
+			"type": "Number",
+			"required": false,
+			"length": null,
+			"default": 1,
+			"precision": 3,
+			"scale": 0,
+			"mysql": {
+				"columnName": "accounting_type",
+				"dataType": "tinyint",
+				"dataLength": null,
+				"dataPrecision": 3,
+				"dataScale": 0,
+				"nullable": "N"
+			}
+		},
+		"billingId": {
+			"type": "String",
+			"required": false,
+			"length": 64,
+			"precision": null,
+			"scale": null,
+			"mysql": {
+				"columnName": "billingId",
+				"dataType": "varchar",
+				"dataLength": 64,
+				"dataPrecision": null,
+				"dataScale": null,
+				"nullable": "Y"
+			}
+		}
+	},
+	"validations": [],
+	"relations": {
+		"Subscriptions": {
+			"type": "hasMany",
+			"model": "Subscription"
+		},
+		"Assets": {
+			"type": "hasMany",
+			"model": "Asset"
+		},
+		"Documents": {
+			"type": "hasMany",
+			"model": "Document"
+		},
+		"DashUser": {
+			"type": "hasMany",
+			"model": "DashUser",
+			"foreignKey": "customerId"
+		},
+		"DashRole": {
+			"type": "hasMany",
+			"model": "DashRole",
+			"foreignKey": "customerId"
+		},
+		"ProductVariations": {
+			"type": "hasMany",
+			"model": "ProductVariation",
+			"foreignKey": "customerId",
+			"through": "CustomerProductsRel",
+			"keyThrough": "productId"
+		}
+	},
+	"acls": [
+		{
+			"principalType": "ROLE",
+			"principalId": "$authenticated",
+			"permission": "ALLOW",
+			"property": "*"
+		},
+		{
+			"accessType": "*",
+			"principalType": "ROLE",
+			"principalId": "Administrator",
+			"permission": "ALLOW"
+		},
+		{
+			"accessType": "*",
+			"principalType": "ROLE",
+			"principalId": "$everyone",
+			"permission": "DENY"
+		}
+	],
+	"methods": {}
+}

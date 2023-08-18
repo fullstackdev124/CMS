@@ -1,0 +1,49 @@
+{
+  "name": "DashAccessToken",
+  "base": "AccessToken",
+  "idInjection": false,
+  "mysql": {
+    "table": "AccessToken"
+  },
+  "scope": {
+    "include": "DashUser"
+  },
+  "properties": {
+    "expires": {
+      "type": "date"
+    },
+    "srcip": {
+      "type": "string",
+      "default": "127.0.0.1"
+    }
+  },
+  "validations": [],
+  "relations": {
+    "DashUser": {
+      "type": "belongsTo",
+      "model": "DashUser",
+      "foreignKey": "userId"
+    }
+  },
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "Administrator",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

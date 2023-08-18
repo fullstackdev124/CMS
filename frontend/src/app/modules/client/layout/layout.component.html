@@ -1,0 +1,15 @@
+<div class="layout-wrapper" [ngClass]="containerClass" id="layout_wrapper">
+  <app-header></app-header>
+  <div class="layout-sidebar" id="layout_menu">
+    <app-leftmenu></app-leftmenu>
+  </div>
+  <div class="layout-main-container">
+    <div class="layout-main" id="layout_main" style="height: calc(100vh - 149px)">
+      <router-outlet></router-outlet>
+
+      <app-footer></app-footer>
+    </div>
+  </div>
+
+<!--  <softphone></softphone>-->
+</div>

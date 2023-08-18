@@ -1,0 +1,163 @@
+<h4 class="page_title">New SIP Gateway</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="General">
+        <div class="p-fluid grid validation-form mt-4">
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="text" pInputText id="inputmask1" [(ngModel)]="selectedName" [ngClass]="formValid.name ? '' : 'ng-invalid ng-dirty'"  name="name" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)"/>
+              <label for="inputmask1">Name</label>
+            </span>
+            <p class="p-error" *ngIf="!formValid.name">Name is required.</p>
+          </div>
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="text" pInputText id="inputmask2" [(ngModel)]="selectedAddress" [ngClass]="formValid.address ? '' : 'ng-invalid ng-dirty'"  name="address" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)" />
+              <label for="inputmask2">Address</label>
+            </span>
+            <p class="p-error" *ngIf="!formValid.address">Address should be valid format.</p>
+          </div>
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="number" pInputText id="inputmask3" [(ngModel)]="selectedPort" [ngClass]="formValid.port ? '' : 'ng-invalid ng-dirty'"  name="port" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)" />
+              <label for="inputmask3">Port</label>
+            </span>
+            <p class="p-error" *ngIf="!formValid.port">Port should be valid number. (5060 ~ 65536)</p>
+          </div>
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <input type="number" pInputText id="inputmask4" [(ngModel)]="selectedStrip" [ngClass]="formValid.digitsStrip ? '' : 'ng-invalid ng-dirty'"  name="digits_strip" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)" />
+              <label for="inputmask4">Digits Strip</label>
+            </span>
+            <p class="p-error" *ngIf="!formValid.digitsStrip">Port should be valid number. (0 ~ 10)</p>
+          </div>
+          <div class="field col-12 md:col-6" *ngIf="customerSelectable">
+            <span class="p-float-label" >
+              <p-dropdown id="dropdown1" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="sipGateway.customerId = $event.value.id" [autoDisplayFirst]="true" optionLabel="companyName"></p-dropdown>
+              <label for="dropdown1">Default for Customer</label>
+            </span>
+          </div>
+          <div [ngClass]="customerSelectable ? 'field col-12 md:col-6' : 'field col-12'">
+            <span class="p-float-label">
+              <input type="text" pInputText id="inputmask5" [(ngModel)]="selectedDescription" [ngClass]="formValid.description ? '' : 'ng-invalid ng-dirty'"  name="description" (change)="handleChangeEvent($event)" (blur)="handleChangeEvent($event)"/>
+              <label for="inputmask5">Description</label>
+            </span>
+            <p class="p-error" *ngIf="!formValid.description">Description is required.</p>
+          </div>
+          <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+              <p-dropdown id="dropdown12" [(ngModel)]="selectedCalledType" [options]="calledTypes" (onChange)="sipGateway.type = $event.value.key" [autoDisplayFirst]="true" optionLabel="label"></p-dropdown>
+              <label for="dropdown12">Gateway Type</label>
+            </span>
+          </div>
+          <div class="col-12 md:col-6 flex justify-content-start">
+            <div class="field-radiobutton ml-3 mr-5">
+              <p-radioButton name="kind" value="true" [(ngModel)]="isWhitelisted" id="opt_whitelisted"></p-radioButton>
+              <label for="opt_whitelisted">Whitelisted</label>
+            </div>
+            <div class="field-radiobutton">
+              <p-radioButton name="kind" value="false" [(ngModel)]="isWhitelisted" id="opt_blacklisted"></p-radioButton>
+              <label for="opt_blacklisted">Blacklisted</label>
+            </div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="col-6">
+          </div>
+          <div class="col-6 text-right">
+            <button pButton pRipple label="Create" [disabled]="!isFormInvalid()" (click)="onCreate()"></button>
+          </div>
+        </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Bulk Upload SipGateways">
+      <h6 style="padding-top: 20px;"><b>{{data?.length}}</b> SipGateways</h6>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown2" [(ngModel)]="selectedCustomer" [options]="customerList"
+                          (onChange)="selCustomerId = $event.value.id" [autoDisplayFirst]="false"
+                          optionLabel="companyName"></p-dropdown>
+              <label for="dropdown2">Company</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown3" [options]="types" (onChange)="action = $event.value.key"
+                          [autoDisplayFirst]="true" optionLabel="value"></p-dropdown>
+              <label for="dropdown3">Type</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mb-5">
+        <div class="col-4">
+        </div>
+        <div class="col-8 text-right">
+          <button pButton pRipple label="Import" icon="pi pi-cloud-file" (click)="importPanelOpened = true"
+                  class="mr-2"></button>
+          <button pButton pRipple label="Upload" icon="pi pi-cloud-upload" (click)="onCreateNumber(true)"
+                  [disabled]="data.length == 0"></button>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="importPanelOpened">
+        <p-messages severity="info">
+          <ng-template pTemplate>
+            <h6 class="">File Format should be same as below. <small style="">&nbsp;(Type should be .xlsx, .xls, or
+              .csv!)</small></h6>
+          </ng-template>
+        </p-messages>
+        <p-table [value]="bulkSampleData" responsiveLayout="stack" responsive="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Port</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td><span class="p-column-title">Name</span>{{item.name}}</td>
+              <td><span class="p-column-title">Address</span>{{item.address}}</td>
+              <td><span class="p-column-title">Port</span>{{item.port}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <div class="grid mt-3">
+          <div class="col-6">
+            <button pButton pRipple label="Cancel" class="p-button-warning"
+                    (click)="importPanelOpened = false"></button>
+          </div>
+          <div class="col-6 text-right">
+            <p-progressSpinner [style]="{width: '36px', height: '36px'}" [hidden]="!isUploading" class="mr-2"></p-progressSpinner>
+            <button pButton pRipple label="Choose File" (click)="fileInput.click()"></button>
+            <input #fileInput type="file" (change)="changeListener($event)" style="display: none"
+                   accept=".xlsx,.xls,.csv"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p-table [value]="data" [scrollable]="true" scrollHeight="300px" responsiveLayout="stack" responsive="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Name</th>
+              <th>Address</th>
+              <th>Port</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td><span class="p-column-title">Name</span>{{row[0]}}</td>
+              <td><span class="p-column-title">Address</span>{{row[1]}}</td>
+              <td><span class="p-column-title">Port</span>{{row[2]}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

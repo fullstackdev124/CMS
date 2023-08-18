@@ -1,0 +1,68 @@
+td .callerid {
+  font-size: 14px;
+}
+
+td > h5 {
+  margin: 0 0 5px;
+}
+td > h6 {
+  margin: 0 0 5px;
+}
+td .search {
+  cursor: pointer;
+}
+td .source-info {
+  margin-bottom: 4px;
+}
+
+.page_title i {
+  font-size: 14px;
+}
+
+
+:host ::ng-deep .date_range.p-calendar {
+  .date_range_panel.p-datepicker {
+    width: 62rem;
+    display: flex;
+    .calendar-header {
+      flex: 3;
+    }
+
+    .p-datepicker-group-container {
+      flex: 9;
+      .p-disabled, .p-component:disabled {
+        opacity: 1;
+      }
+      .p-datepicker-other-month {
+        .p-disabled, .p-component:disabled {
+          opacity: 0.38;
+        }
+      }
+    }
+  }
+}
+
+.fixed-position {
+  position: fixed;
+  z-index: 100;
+  width: calc(100% - 4rem);
+  background-color: transparent;
+  padding-bottom: 0rem
+}
+
+.page_title {
+  margin-bottom: 0 !important;
+  padding-bottom: 2rem !important;
+  background-color: var(--surface-ground) !important;
+}
+
+.fixed-margin {
+  margin-top: 282px;
+}
+
+.disable_event_area {
+  pointer-events: none;
+}
+:host ::ng-deep .disable_event_control .date_range.p-calendar>input, :host ::ng-deep .disable_event_control .date_range.p-calendar>button {
+  pointer-events: none;
+}

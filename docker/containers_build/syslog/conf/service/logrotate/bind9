@@ -1,0 +1,17 @@
+/var/log/bind/named-default.log
+/var/log/bind/named-auth.log
+/var/log/bind/named-resolver.log
+/var/log/bind/named-config.log
+/var/log/bind/named-update.log
+{
+	rotate 4
+	weekly
+	missingok
+	notifempty
+	compress
+	delaycompress
+	sharedscripts
+	postrotate
+		/usr/sbin/service bind9 reload > /dev/null 2>&1 || true
+	endscript
+}

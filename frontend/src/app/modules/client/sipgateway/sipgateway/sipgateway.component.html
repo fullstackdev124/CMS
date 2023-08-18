@@ -1,0 +1,107 @@
+<h4 class="page_title">SIP Gateways</h4>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <div class="grid">
+    <div class="col-12 md:col-2 p-fluid field" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+      <span class="p-float-label">
+          <p-dropdown id="dropdown1" [(ngModel)]="filteredCustomer" [options]="customerList" [autoDisplayFirst]="true" optionLabel="companyName"></p-dropdown>
+          <label for="dropdown1">Customer</label>
+      </span>
+    </div>
+    <div class="col-12 {{store.getUserType() == cmsUserType.superAdmin ? 'md:col-4' : 'md:col-6'}}">
+      <div class="p-inputgroup">
+        <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue" [disabled]="isLoading" (keyup.enter)="onClickFilter()">
+        <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="isLoading ? '' : onClickFilter()"></button>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-6 text-right flex justify-content-end align-items-center">
+      <span class="mr-3" *ngIf="totalCount!=-1">Total <b>{{totalCount}}</b> Gateway<span *ngIf="totalCount>1">s</span><em *ngIf="totalCount!=resultsLength && resultsLength!=-1"><br>{{resultsLength}} Gateway<em *ngIf="resultsLength>1">s</em> Filtered</em></span>
+      <button pButton pRipple label="Add new Gateway" *ngIf="permission==permissionTypeAll" routerLink="add"></button>
+      <button pButton pRipple label="Assign Gateway Order" class="p-button-info ml-1" *ngIf="permission==permissionTypeAll" routerLink="order"></button>
+      <button pButton pRipple label="Export" class="p-button-secondary ml-1" icon="pi pi-cloud-download" (click)="isLoading || isExporting ? '' : onExport($event)" *ngIf="sipGateways && sipGateways.length > 0"></button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="sipGateways" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngIf="permission==permissionTypeAll" style="width: 56px;"></th>
+        <th [ngClass]="sortActive === 'name' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('name')">Name</a>
+        </th>
+        <th [ngClass]="sortActive === 'type' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('type')">Gateway Type</a>
+        </th>
+        <th class="col-sm-hidden">Customer</th>
+        <th [ngClass]="sortActive === 'address' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('address')">Address</a>
+        </th>
+        <th>Port</th>
+        <th class="col-md-hidden">Description</th>
+        <th class="" style="width: 80px;"></th>
+        <th  [ngClass]="sortActive === 'createdAt' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('createdAt')">Created Time</a>
+        </th>
+        <th  [ngClass]="sortActive === 'updatedAt' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('updatedAt')">Updated Time</a>
+        </th>
+        <th class="" style="width: 56px;">Action</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-sipGateway>
+      <tr>
+        <td *ngIf="permission==permissionTypeAll">
+          <button pButton routerLink="edit/{{sipGateway.id}}" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+        <td class="">
+          <span class="p-column-title">Name</span>
+          {{sipGateway.name}}
+        </td>
+        <td class="">
+          <span class="p-column-title">Gateway Type</span>
+          {{sipGateway.type==1 ? 'Outbound Gateway' : 'Incoming Gateway'}}
+        </td>
+        <!-- customer id -->
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Customer</span>
+          <h6>{{sipGateway.hasOwnProperty('Customer') ? sipGateway?.Customer?.companyName : ''}}</h6>
+        </td>
+        <td class="">
+          <span class="p-column-title">Address</span>
+          {{sipGateway.address}}
+        </td>
+        <td class="">
+          <span class="p-column-title">Port</span>
+          {{sipGateway.port}}
+        </td>
+        <td class="col-md-hidden">
+          <span class="p-column-title">Description</span>
+          {{sipGateway.description}}
+        </td>
+        <td class="">
+          <span class="p-column-title">&nbsp;</span>
+          <span class="p-mark"><i class="pi {{sipGateway.isWhitelisted ? 'pi-flag' : 'pi-flag-fill'}}"></i> {{sipGateway.isWhitelisted ? 'Whitelisted' : 'Blacklisted'}}</span>
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Created Time</span>
+          {{sipGateway.createdAt}}
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Updated Time</span>
+          {{sipGateway.updatedAt}}
+        </td>
+        <td class="">
+          <button *ngIf="sipGateway.type==1" pTooltip="Mark as default gateway" tooltipPosition="top" tooltipEvent="hover" pButton (click)="markDefaultOutboundGateway(sipGateway.id)" icon="pi pi-check" class="p-button-rounded p-button-outlined"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-paginator #paginator [rows]="pageSize" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" [totalRecords]="resultsLength" (onPageChange)="paginate($event)"></p-paginator>
+</div>
+
+<p-confirmDialog [style]="{width: '50vw'}" key="markDefaultDialog" [baseZIndex]="10000"></p-confirmDialog>

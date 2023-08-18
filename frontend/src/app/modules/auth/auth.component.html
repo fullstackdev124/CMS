@@ -1,0 +1,6 @@
+<router-outlet></router-outlet>
+
+<div class="wrapper">
+  <p>You want to change color scheme?</p>
+  <button pButton label="{{scheme=='dark' ? 'Light Mode' : 'Dark Mode'}}" icon="{{scheme=='dark' ? 'pi pi-sun' : 'pi pi-moon'}}" class="p-button-info p-button-text" (click)="changeScheme()"></button>
+</div>

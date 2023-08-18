@@ -1,0 +1,17 @@
+.editing_product_panel {
+  .grid {
+    padding: 0 2rem;
+
+    .field {
+      width: 100%;
+
+      .p-component {
+        width: 100% !important;
+      }
+    }
+  }
+
+  .height-50 {
+    height: 50px;
+  }
+}

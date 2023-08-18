@@ -1,0 +1,4 @@
+#!/bin/bash
+set -m
+
+/usr/sbin/rtpengine -f -E -L 7 --no-log-timestamps --pidfile /run/rtpengine-daemon.pid --config-file /etc/rtpengine.conf

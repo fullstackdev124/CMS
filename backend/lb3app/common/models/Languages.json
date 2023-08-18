@@ -1,0 +1,62 @@
+{
+  "name": "Languages",
+  "idInjection": true,
+  "options": {
+    "mysql": {
+      "schema": "ecms",
+      "table": "languages"
+    }
+  },
+  "scope": {
+  },
+  "properties": {
+    "id": {
+      "type": "number",
+      "required": false,
+      "length": 11,
+      "precision": null,
+      "scale": null,
+      "id": 1,
+      "mysql": {
+        "columnName": "id",
+        "dataType": "int",
+        "dataLength": 11,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "N"
+      }
+    },
+    "name": {
+      "type": "String",
+      "required": true,
+      "length": 49,
+      "precision": null,
+      "scale": null,
+      "id": 2,
+      "mysql": {
+        "columnName": "name",
+        "dataType": "varchar",
+        "dataLength": 49,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "N"
+      }
+    },
+    "iso": {
+      "type": "String",
+      "required": true,
+      "length": 3,
+      "precision": null,
+      "scale": null,
+      "id": 3,
+      "mysql": {
+        "columnName": "iso",
+        "dataType": "varchar",
+        "dataLength": 2,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "N"
+      }
+    }
+  }
+}

@@ -1,0 +1,77 @@
+#!/bin/sh
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+NAME=CDREngine
+SCREEN=`which screen`
+PIDFILE=/var/run/mvmonitor.pid
+RUNPATH=/usr/local/CDREngine
+LOGPATH=/var/log/$NAME/$NAME.log
+DESC="CDREngine Daemon"
+DAEMON=/usr/local/CDREngine/CDREngineStart
+
+### BEGIN INIT INFO
+# Provides:             CDREngine
+# Required-Start:       $network $syslog $named $local_fs $remote_fs
+# Required-Stop:        $network $syslog $named $local_fs $remote_fs
+# Should-Start:         mysql postgresql opensips asterisk
+# Should-Stop:          mysql postgresql opensips asterisk
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:	CDREngine
+# Description:          CDREngine Monitoring Daemon
+### END INIT INFO
+
+set -e
+
+if ! [ -x $DAEMON ] ; then
+        echo "ERROR: $DAEMON not found"
+        exit 1
+fi
+
+if ! [ -x $SCREEN ] ; then
+        echo "ERROR: $SCREEN not found"
+        exit 1
+fi
+
+# Use the LSB standard functions for services management
+. /lib/lsb/init-functions
+
+case "$1" in
+	start)
+		# Starts Monitoring Engine
+		echo "Starting CDREngine Daemon ..."
+		# Set Running Path
+		cd $RUNPATH
+		export CWD=$RUNPATH
+		# Start Process
+		$SCREEN -T "$NAME" -L -Logfile $LOGPATH -d -m sh $DAEMON > /dev/null 2>&1
+		# Get Process PID
+		PID=`/bin/ps aufx | /bin/grep SCREEN | /bin/grep $NAME | egrep -v grep | awk '{ print $2 }'`
+		# Write down PID file
+		echo $PID > $PIDFILE
+	;;
+	stop)
+		# Kill Billing Engine
+        echo "Stopping CDREngine Daemon ..."
+		# Kill Process
+		/bin/ps aufx | /bin/grep SCREEN | /bin/grep $NAME | egrep -v grep | awk '{ print $2 }' | xargs kill --signal 9
+		# Wipe Screen Sessions
+		$SCREEN -wipe > /dev/null 2>&1
+	;;
+	status)
+		T2B=`/bin/ps aufx | /bin/grep SCREEN | /bin/grep $NAME | egrep -v grep | awk '{ print $2 }'`
+		if [ ! -z "$T2B" ]; then
+			echo "$NAME Status: engine seems to be running"
+			exit 0
+		else
+			echo "$NAME Status: engine seems to be stopped"
+			exit 1
+		fi
+	;;
+	*)
+		N=/etc/init.d/$NAME
+		echo "Usage: $N {start|stop|status}" >&2
+		exit 1
+	;;
+esac

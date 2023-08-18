@@ -1,0 +1,40 @@
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div  class="surface-0 flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
+  <div  class="grid justify-content-center p-2 lg:p-0" style="min-width:80%">
+    <div class="col-12 mt-5 xl:mt-0 text-center">
+      <img src="assets/images/logo-callmetrics.svg" alt="eCMS logo" class="mb-5" style="height:60px;">
+    </div>
+    <div class="col-12 xl:col-6" style="border-radius:56px; padding:0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%);">
+      <form name="form" [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+      <div class="h-full w-full m-0 py-7 px-4" style="border-radius:53px; background: linear-gradient(180deg, var(--surface-50) 38.9%, var(--surface-0));">
+        <div class="text-center mb-5">
+          <div class="text-900 text-3xl font-medium mb-3">Login to your account</div>
+        </div>
+
+        <div class="w-full md:w-10 mx-auto">
+          <label for="username1" class="block text-900 text-xl font-medium mb-2">Username</label>
+          <input id="username1" type="text" placeholder="Username" pInputText class="w-full mb-3" formControlName="username" (change)="submitted=false" style="padding:1rem;">
+
+          <label for="password1" class="block text-900 font-medium text-xl mb-2">Password</label>
+          <input pPassword type="password" id="password1" [feedback]="false" placeholder="Password" formControlName="password" styleClass="w-full mb-3" />
+
+          <div class="flex align-items-center justify-content-between mt-5 mb-5">
+            <div class="flex align-items-center">
+              <p-checkbox id="rememberme1" formControlName="rememberedIf" [binary]="true" styleClass="mr-2"></p-checkbox>
+              <label for="rememberme1">Remember me</label>
+            </div>
+            <a [routerLink]="['/forgot-password']" class="font-medium no-underline ml-2 text-right cursor-pointer" style="color: var(--primary-color)">Forgot password?</a>
+          </div>
+          <button type="submit" pButton pRipple label="Sign In" [disabled]="submitted" class="w-full p-3 text-xl"></button>
+
+          <div class="mt-5">
+            <span class="text-600 font-medium mb-2">Don't have account yet?</span>
+            <button pButton pRipple label="Sign Up" [routerLink]="['/signup']" class="p-button-secondary w-full p-3 text-xl"></button>
+          </div>
+        </div>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>

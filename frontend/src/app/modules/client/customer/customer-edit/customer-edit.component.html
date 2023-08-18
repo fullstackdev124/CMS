@@ -1,0 +1,416 @@
+<h4 class="page_title">Edit Customer <span *ngIf="customer?.firstName && customer?.lastName">({{customer.firstName}} {{customer.lastName}})</span></h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="Company">
+      <h5 class="mt-5">Company Information</h5>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask1" name="companyName" [ngModel]="customer.companyName" (change)="handleChange('companyName',$event)"/>
+            <label for="inputmask1">Company Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask2" name="companyId" [ngModel]="customer.companyId" (change)="handleChange('companyId', $event)"/>
+            <label for="inputmask2">Company ID</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask3" name="billingEmail" [ngModel]="customer.billingEmail" (change)="handleChange('billingEmail',$event)"/>
+            <label for="inputmask3">Billing Email</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask41" name="address" [ngModel]="customer.address" (change)="handleChange('address', $event)"/>
+            <label for="inputmask41">Address</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask31" name="city" [ngModel]="customer.city" (change)="handleChange('city',$event)"/>
+            <label for="inputmask31">City</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask42" name="state" [ngModel]="customer.state" (change)="handleChange('state', $event)"/>
+            <label for="inputmask42">State</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask44" name="country" [ngModel]="customer.country" (change)="handleChange('country', $event)"/>
+            <label for="inputmask44">Country</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask32" name="zip" [ngModel]="customer.zip" (change)="handleChange('zip',$event)"/>
+            <label for="inputmask32">Zip</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-inputMask id="inputmask43" name="phone" [ngModel]="customer.phone" mask="9 (999) 999-9999" (change)="handleChange('phone', $event)"></p-inputMask>
+            <label for="inputmask43">Phone</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask33" name="vatNumber" [ngModel]="customer.vatNumber" (change)="handleChange('vatNumber',$event)"/>
+            <label for="inputmask33">EIN / SSN Number</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save Changes" (click)="onSaveDetail()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Contact">
+      <h5 class="mt-5">Contact Information</h5>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask35" name="firstName" [ngModel]="customer.firstName" (change)="handleChange('firstName',$event)"/>
+            <label for="inputmask35">First Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask45" name="lastName" [ngModel]="customer.lastName" (change)="handleChange('lastName', $event)"/>
+            <label for="inputmask45">Last Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask25" name="contactEmail" [ngModel]="customer.contactEmail" (change)="handleChange('contactEmail', $event)"/>
+            <label for="inputmask25">Email</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save Changes" (click)="onSaveDetail()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Billing Settings" *ngIf="isSuperAdmin">
+      <div class="grid p-fluid">
+        <div class="col-12 md:col-5 field">
+          <label class="form-label">Accounting Type</label>
+          <div class="p-inputgroup">
+            <p-dropdown id="dropdown121" [(ngModel)]="selectedAccountingType" class="p-component-full" [options]="accountingType"  [autoDisplayFirst]="false" optionLabel="label"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-2 field">
+        </div>
+
+        <div class="col-12 md:col-5 field">
+          <label class="form-label">&nbsp;</label>
+          <div class="p-inputgroup pt-3">
+          <p-checkbox [(ngModel)]="isPostpaid" [binary]="true" label="Postpaid Billing"></p-checkbox>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Local DID Fee</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">$</span>
+            <p-inputNumber [(ngModel)]="localdid" inputId="minmaxfraction" class="p-component-full"  mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [step]="0.01" [showButtons]="true"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-2 field" *ngIf="selectedAccountingType.value==1">
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Local DID Setup Fee</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">$</span>
+            <p-inputNumber [(ngModel)]="localdid_fee" inputId="minmaxfraction" class="p-component-full"  mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [step]="0.01" [showButtons]="true"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Toll Free Fee</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">$</span>
+            <p-inputNumber [(ngModel)]="tollfree" inputId="minmaxfraction" class="p-component-full" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [step]="0.01" [showButtons]="true"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-2 field" *ngIf="selectedAccountingType.value==1">
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Toll Free Setup Fee</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">$</span>
+            <p-inputNumber [(ngModel)]="tollfree_fee" inputId="minmaxfraction" class="p-component-full" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [step]="0.01" [showButtons]="true"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Inbound Cost per minute</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">$</span>
+            <p-inputNumber [(ngModel)]="inbound_cost_per_minute" inputId="inbound_cost_per_minute" class="p-component-full" mode="decimal" [minFractionDigits]="4" [maxFractionDigits]="4" [step]="0.0001" [showButtons]="true"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-2 field" *ngIf="selectedAccountingType.value==1">
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Outbound Cost per minute</label>
+          <div class="p-inputgroup">
+            <span class="p-inputgroup-addon">$</span>
+            <p-inputNumber [(ngModel)]="outbound_cost_per_minute" inputId="outbound_cost_per_minute" class="p-component-full" mode="decimal" [minFractionDigits]="4" [maxFractionDigits]="4" [step]="0.0001" [showButtons]="true"></p-inputNumber>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-5 field" *ngIf="selectedAccountingType.value==1">
+          <label class="form-label">Rate Type</label>
+          <div class="p-inputgroup">
+            <p-dropdown id="dropdown1" [(ngModel)]="selectedRateType" class="p-component-full" [options]="rateTypes"  [autoDisplayFirst]="false" optionLabel="label"></p-dropdown>
+          </div>
+        </div>
+
+        <div class="col-12 text-right">
+          <button pButton pRipple label="Save Changes" style="max-width: 150px;" (click)="onSaveDetail()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Make Payment" *ngIf="isSuperAdmin">
+      <h5 class="mt-2">Balance: <i>${{customer?.balance?.toFixed(2)}}</i></h5>
+
+      <div class="grid mt-2">
+        <div class="col-12">
+          <div class="grid p-fluid">
+            <div class="col-12 md:col-3 field">
+              <label class="form-label">Payment Product</label>
+              <div class="p-inputgroup">
+                <p-dropdown id="dropdown523" [(ngModel)]="selectedPaymentProduct" class="p-component-full" [options]="paymentProducts" (onChange)="onPaymentProductChange($event)"  [autoDisplayFirst]="false" optionLabel="label"></p-dropdown>
+              </div>
+            </div>
+            <div class="col-12 md:col-3 field">
+              <label class="form-label">Amount</label>
+              <div class="p-inputgroup">
+                <span class="p-inputgroup-addon">$</span>
+                <p-inputNumber [(ngModel)]="purchaseAmount" [disabled]="selectedPaymentProduct.value!=0" class="p-component-full" inputId="purchase_amount" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="2" [step]="0.01" [showButtons]="true"></p-inputNumber>
+              </div>
+            </div>
+            <div class="col-12 md:col-6 field">
+              <label class="form-label" for="inputmask4323">Description</label>
+              <div class="p-inputgroup">
+                <input type="text" pInputText id="inputmask4323" [disabled]="selectedPaymentProduct.value!=0" name="purchase_description" [(ngModel)]="purchaseDescription"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 text-right">
+          <button pButton pRipple label="Make Payment" (click)="onPurchase()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Payment Method" *ngIf="isSuperAdmin">
+      <h5 class="mt-2">Balance: <i>${{customer?.balance?.toFixed(2)}}</i></h5>
+
+      <div class="grid mt-2">
+        <div class="col-12 md:col-5">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterPaymentMethodValue" (keyup.enter)="filterPaymentMethod()">
+            <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="filterPaymentMethod()"></button>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-7 text-right">
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <div class="col-12">
+          <p-table [value]="filteredPaymentMethods" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="true" [globalFilterFields]="['amount']"  [rowHover]="true"
+                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th style="width: 64px">Action</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-method>
+              <tr>
+                <td>
+                  <span class="p-column-title">Name</span>
+                  {{method?.name}}
+                </td>
+                <td>
+                  <span class="p-column-title">Description</span>
+                  {{method?.description}}
+                </td>
+                <td>
+                  <span class="p-column-title">Action</span>
+                  <button *ngIf="method.token!=null && method.token!=''" title="Deposit" pButton pRipple icon="pi pi-money-bill" class="p-button-rounded p-button-primary" (click)="onDeposit(method)"></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </div>
+
+    </p-tabPanel>
+
+    <p-tabPanel header="Call Logs" *ngIf="isSuperAdmin">
+      <div class="grid mt-5">
+        <div class="col-12 md:col-5">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterCallLogValue" (keyup.enter)="onSearchCallLog()">
+            <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="onSearchCallLog()"></button>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+          <span class="mr-3" *ngIf="callLog_resultsLength!=-1"><em>{{callLog_resultsLength}}</em> CallLog<span *ngIf="callLog_resultsLength>1">s</span></span>
+          <button type="button" pButton pRipple icon="pi pi-refresh" (click)="onRefreshCallLog()" class="p-button-info mr-2" label="Refresh"></button>
+          <button type="button" pButton pRipple icon="pi pi-cloud-download" (click)="exportExcel('call log')" class="p-button-warning mr-2" label="Export"></button>
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <div class="col-12">
+          <p-table [value]="callLogs" responsiveLayout="stack" responsive="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Description</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-trans>
+              <tr>
+                <td>
+                  <span class="p-column-title">Dates</span>
+                  {{getDateTimeStringOfUserTimezone(trans?.transactionDate)}}
+                </td>
+                <td>
+                  <span class="p-column-title">Amount</span>
+                  ${{trans.amount>0 ? trans.amount : ((-1) * trans.amount)}}
+                </td>
+                <td>
+                  <span class="p-column-title">Description</span>
+                  {{trans?.description}}
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <p-paginator [rows]="callLog_pageSize" [totalRecords]="callLog_resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="callLog_paginate($event)"></p-paginator>
+        </div>
+      </div>
+
+    </p-tabPanel>
+
+    <p-tabPanel header="Transaction History" *ngIf="isSuperAdmin">
+      <div class="grid mt-5">
+        <div class="col-12 md:col-5">
+          <div class="p-inputgroup">
+            <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterAccountLogValue" (keyup.enter)="onSearchAccountLog()">
+            <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="onSearchAccountLog()"></button>
+          </div>
+        </div>
+
+        <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+          <span class="mr-3" *ngIf="accountLog_resultsLength!=-1"><em>{{accountLog_resultsLength}}</em> Log<span *ngIf="accountLog_resultsLength>1">s</span></span>
+          <button type="button" pButton pRipple icon="pi pi-refresh" (click)="onRefreshAccountLog()" class="p-button-info mr-2" label="Refresh"></button>
+          <button type="button" pButton pRipple icon="pi pi-cloud-download" (click)="exportExcel('account log')" class="p-button-warning mr-2" label="Export"></button>
+        </div>
+      </div>
+      <div class="grid mt-2">
+        <div class="col-12">
+          <p-table [value]="accountLogs" responsiveLayout="stack" responsive="true">
+            <ng-template pTemplate="header">
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Description</th>
+                <th style="width: 92px;">Action</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-trans>
+              <tr>
+                <td>
+                  <span class="p-column-title">Dates</span>
+                  {{getDateTimeStringOfUserTimezone(trans?.transactionDate)}}
+                </td>
+                <td>
+                  <span class="p-column-title">Type</span>
+                  <span *ngIf="(trans.paymentId!=null && trans.amount>0) || (trans.productId==3 || trans.productId==4)">Deposit</span>
+                  <span *ngIf="trans.paymentId!=null && trans.amount<0">Refund</span>
+                  <span *ngIf="trans.productId==5 || trans.productId==6">Payment</span>
+                </td>
+                <td>
+                  <span class="p-column-title">Amount</span>
+                  {{trans.amount<0 ? (trans.paymentId!=null ? '$'+(trans.amount*-1) : '-$'+(trans.amount*-1)) : '$'+trans.amount }}
+                </td>
+                <td>
+                  <span class="p-column-title">Description</span>
+                  {{trans?.description}}
+                </td>
+                <td>
+                  <span class="p-column-title">Actions</span>
+                  <button *ngIf="!trans.is_refunded && trans.paymentId!=null && trans.amount>0 && trans.productId==3 && trans.token!=null" title="Refund" pButton pRipple icon="pi pi-replay" class="p-button-rounded p-button-primary" (click)="onStripeRefund(trans)"></button>
+                  <button *ngIf="trans.invoice_details==null &&  !trans.is_refunded && trans.paymentId!=null && trans.amount>0 && trans.productId==3 && trans.token!=null" title="Make a Invoice" pButton pRipple icon="pi pi-money-bill" class="ml-1 p-button-rounded p-button-warning" (click)="onStripeInvoice(trans)"></button>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+          <p-paginator [rows]="accountLog_pageSize" [totalRecords]="accountLog_resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="accountLog_paginate($event)"></p-paginator>
+        </div>
+      </div>
+
+    </p-tabPanel>
+
+  </p-tabView>
+</div>
+
+<p-dialog header="Refund Confirmation" [(visible)]="refundConfirmationDialog" styleClass="mydialog">
+  <div class="col-12 p-fluid field">
+    <span class="p-float-label">
+        <p-inputNumber [(ngModel)]="refundAmount" mode="decimal"></p-inputNumber>
+        <label for="">Amount to Refund</label>
+    </span>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-times" (click)="refundConfirmationDialog = false" label="No" styleClass="p-button-text"></p-button>
+    <p-button icon="pi pi-check" (click)="doStripeRefund()" label="Yes" styleClass="p-button-text"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="Deposit from Payment Method" [(visible)]="depositDialog" styleClass="mydialog">
+  <div class="col-12 p-fluid field">
+    <span class="p-float-label">
+        <p-inputNumber [(ngModel)]="depositAmount" mode="decimal"></p-inputNumber>
+        <label for="">Amount to Deposit</label>
+    </span>
+  </div>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-times" (click)="depositDialog = false" label="No" styleClass="p-button-text"></p-button>
+    <p-button icon="pi pi-check" (click)="doStripeDeposit()" label="Yes" styleClass="p-button-text"></p-button>
+  </ng-template>
+</p-dialog>

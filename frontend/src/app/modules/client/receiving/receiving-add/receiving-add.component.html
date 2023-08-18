@@ -1,0 +1,145 @@
+<h4 class="page_title">New Receiving Number</h4>
+<p>The receiving number is dialed when a tracking number is called.</p>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="New Number">
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6 flex align-items-start">
+          <span class="p-float-label" >
+            <p-dropdown [options]="phone_countries" [(ngModel)]="selectedPhoneCountry" optionLabel="label" [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+              <ng-template pTemplate="selectedItem">
+                <div class="flex">
+                  <img src="assets/images/flags/{{selectedPhoneCountry?.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{selectedPhoneCountry?.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="flex">
+                  <img src="assets/images/flags/{{item?.value.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{item?.value.label}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <label>Country</label>
+          </span>
+          <span class="p-float-label">
+            <p-inputMask id="inputmask1" name="number"  [mask]="selectedPhoneCountry?.mask" [placeholder]="selectedPhoneCountry?.placeholder" [unmask]="true" [(ngModel)]="selectedReceivingNumber"></p-inputMask>
+            <label for="inputmask1"></label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6" >
+          <span class="p-float-label" *ngIf="customerSelectable">
+              <p-dropdown id="dropdown1" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="receivingNumber.customerId = $event.value.id" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+              <label for="dropdown1">Customer</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+              <textarea id="textarea" name="description" rows="3" style="resize: none;" cols="30" pInputTextarea  [(ngModel)]="selectedDescription"></textarea>
+              <label for="textarea">Description</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save & Continue" (click)="onSaveChange()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Bulk Upload Numbers">
+      <h6 style="padding-top: 20px;"><b>{{data.length}}</b> Tracking Numbers</h6>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+            <p-dropdown id="dropdown2" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="selCustomerId = $event.value.id" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+            <label for="dropdown2">Company</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label" >
+            <p-dropdown [options]="phone_countries" [(ngModel)]="selectedCountryCode" optionLabel="label" [filter]="true" filterBy="label" [autoDisplayFirst]="false">
+              <ng-template pTemplate="selectedItem">
+                <div class="flex">
+                  <img src="assets/images/flags/{{selectedCountryCode?.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{selectedCountryCode?.label}}</div>
+                </div>
+              </ng-template>
+              <ng-template let-item pTemplate="item">
+                <div class="flex">
+                  <img src="assets/images/flags/{{item?.value.code}}.svg" class="country_flag" />
+                  <div class="flex-1">{{item?.value.label}}</div>
+                </div>
+              </ng-template>
+            </p-dropdown>
+            <label>Country</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-4">
+          <span class="p-float-label">
+              <p-dropdown id="dropdown3" [options]="types" (onChange)="action = $event.value.key" [autoDisplayFirst]="true" optionLabel="value"></p-dropdown>
+              <label for="dropdown3">Type</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mb-5">
+        <div class="col-4">
+        </div>
+        <div class="col-8 text-right">
+          <button pButton pRipple label="Import" icon="pi pi-cloud-file" (click)="importPanelOpened = true" class="mr-2"></button>
+          <button pButton pRipple label="Upload" icon="pi pi-cloud-upload" (click)="onCreateNumber(true)" [disabled]="data.length == 0"></button>
+        </div>
+      </div>
+
+      <div class="card" *ngIf="importPanelOpened">
+        <p-messages severity="info">
+          <ng-template pTemplate>
+            <h6 class="">File Format should be same as below. <small style="">&nbsp;(Type should be .xlsx, .xls, or .csv!)</small></h6>
+          </ng-template>
+        </p-messages>
+        <p-table [value]="bulkSampleData" responsiveLayout="stack" responsive="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Receiving Number</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <td><span class="p-column-title">Receiving Number</span>{{item.number}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        <div class="grid mt-3">
+          <div class="col-6">
+            <button pButton pRipple label="Cancel" class="p-button-warning" (click)="importPanelOpened = false"></button>
+          </div>
+          <div class="col-6 text-right">
+            <p-progressSpinner [style]="{width: '36px', height: '36px'}" [hidden]="!isUploading" class="mr-2"></p-progressSpinner>
+            <button pButton pRipple label="Choose File" (click)="fileInput.click()"></button>
+            <input #fileInput type="file" (change)="changeListener($event)" style="display: none" accept=".xlsx,.xls,.csv"/>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <p-table [value]="data" [scrollable]="true" scrollHeight="300px" responsiveLayout="stack" responsive="true">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Receiving Number</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td><span class="p-column-title">Receiving Number</span>{{row[0]}}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

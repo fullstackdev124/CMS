@@ -1,0 +1,22 @@
+<h4 class="page_title">Assign Order of SIP Gateway</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-orderList [value]="sipGateways" [dragdrop]="true">
+    <ng-template let-product pTemplate="item">
+      <div class="product-item">
+        <h6><span class="label">Name:</span><span class="value">{{product.name}}</span>,&nbsp;<span class="label">Address:</span><span class="value">{{product.address}}:{{product.port}}</span></h6>
+        <p>Description: &nbsp; <small>{{product.description}}</small></p>
+      </div>
+    </ng-template>
+  </p-orderList>
+
+  <div class="grid mt-5">
+    <div class="col-6">
+    </div>
+    <div class="col-6 text-right">
+      <button pButton pRipple label="Assign Order" (click)="onAssign()"></button>
+    </div>
+  </div>
+</div>

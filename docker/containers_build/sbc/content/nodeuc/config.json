@@ -1,0 +1,21 @@
+{
+    "precode": "*12",
+    "localhost": "{{HOST_IP}}",
+    "localport": {{ADVERTISED_SIP_UDP_PORT}},
+    "topic": "it.techfusion.coresip.admin.AsyncMessageManager",
+    "local_rest": {
+	"host": "127.0.0.1",
+        "port": 3001
+    },
+    "coresip_rest": {
+        "host": "127.0.0.1",
+        "port": 8080
+    },
+    "database": {
+        "host": "{{HOST_IP}}",
+	"port": "{{DB_PORT}}",
+        "username": "{{DB_USER}}",
+        "password": "{{DB_PASS}}",
+        "dbname": "{{DB_NAME}}"
+    }
+}

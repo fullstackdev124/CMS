@@ -1,0 +1,16 @@
+# Defaults for rtpproxy
+
+# The control socket.
+# CONTROL_SOCK="unix:/var/run/rtpproxy/rtpproxy.sock"
+
+# To listen on an UDP socket, uncomment this line:
+CONTROL_SOCK=udp:0.0.0.0:{{RTPPROXY_CTRL_PORT}}
+
+# Additional options that are passed to the daemon.
+EXTRA_OPTS="-F -l 0.0.0.0 -A {{HOST_IP}} -a -R -S /var/spool/rtpproxy/spool -r /var/spool/rtpproxy/recording"
+
+# Other examples
+# EXTRA_OPTS="-u root:root -F -l voip.{{INSTANCE_DOMAIN}} -a -R -S /var/spool/rtpproxy/spool -r /var/spool/rtpproxy/recording"
+# EXTRA_OPTS="-F -l voip.{{INSTANCE_DOMAIN}} -a -R -S /var/spool/rtpproxy/spool -r /var/spool/rtpproxy/recording -d DBUG:LOG_LOCAL5"
+# Bridged Syntax
+# EXTRA_OPTS="-F -l {{INTIF}}/{{EXTIF}}"

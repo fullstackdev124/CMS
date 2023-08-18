@@ -1,0 +1,33 @@
+{
+    "initial": {
+        "cors": {
+            "params": {
+                "origin": "*",
+                "credentials": true,
+                "maxAge": 86400
+            }
+        }
+    },
+    "auth": {
+        "loopback#token": {
+            "params": {
+                "model": "DashAccessToken"
+            }
+        }
+    },
+    "routes": {
+        "loopback#rest": {
+            "paths": [
+                "${restApiRoot}"
+            ]
+        }
+    },
+    "final:after": {
+        "strong-error-handler": {
+            "params": {
+                "debug": false,
+                "log": true
+            }
+        }
+    }
+}

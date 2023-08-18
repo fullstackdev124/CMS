@@ -1,0 +1,17 @@
+{
+  "db": {
+    "name": "db",
+    "host": "208.73.233.32",
+    "port": "3306",
+    "user": "root",
+    "password": "l3tMe.In*",
+    "database": "ecms",
+    "url": "",
+    "debug": false,
+    "socketPath": "",
+    "lazyConnect": true,
+    "connector": "mysql",
+    "connectTimeout": 120000,
+    "connectionTimeout": 120000
+  }
+}

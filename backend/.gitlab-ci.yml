@@ -1,0 +1,89 @@
+image: alpine:latest
+
+stages:
+  - build
+  - deploy
+  - post
+
+build:
+  stage: build
+  image: node:latest
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SSH_IPADDRESS >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $SSH_USER@$SSH_IPADDRESS "cd /srv/ecms-frontend && git checkout $CI_COMMIT_REF_SLUG && /usr/bin/git fetch --all && /usr/bin/git reset --hard origin/$CI_COMMIT_REF_SLUG"
+    - ssh $SSH_USER@$SSH_IPADDRESS "cd /srv/docker && APP_VER=$CI_COMMIT_SHORT_SHA docker-compose build --build-arg APP_VER=$CI_COMMIT_SHORT_SHA backend-techfusion"
+    - ssh $SSH_USER@$SSH_IPADDRESS "cd /srv/docker && docker-compose up -d backend-techfusion"
+
+deploy:
+  stage: deploy
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SSH_IPADDRESS >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $SSH_USER@$SSH_IPADDRESS "echo '$DOCKER_REG_PASS' | docker login -u '$DOCKER_REG_USER' --password-stdin $DOCKER_REG_PROTO://$DOCKER_REG_URL"
+    - |- 
+      case $CI_COMMIT_REF_SLUG in
+        develop)
+          ssh $SSH_USER@$SSH_IPADDRESS "docker tag backend-techfusion:$CI_COMMIT_SHORT_SHA $DOCKER_REG_URL/ecms-dev/backend-techfusion:$CI_COMMIT_SHORT_SHA"
+          ssh $SSH_USER@$SSH_IPADDRESS "docker tag backend-techfusion:$CI_COMMIT_SHORT_SHA $DOCKER_REG_URL/ecms-dev/backend-techfusion:latest"
+          ssh $SSH_USER@$SSH_IPADDRESS "docker push $DOCKER_REG_URL/ecms-dev/backend-techfusion:$CI_COMMIT_SHORT_SHA"
+          ssh $SSH_USER@$SSH_IPADDRESS "docker push $DOCKER_REG_URL/ecms-dev/backend-techfusion:latest"
+          ;;
+        prod)
+          echo "This is still work in progress"
+          ;;
+        master)
+          ssh $SSH_USER@$SSH_IPADDRESS "docker tag backend-techfusion:$CI_COMMIT_SHORT_SHA $DOCKER_REG_URL/ecms/backend-techfusion:$CI_COMMIT_SHORT_SHA"
+          ssh $SSH_USER@$SSH_IPADDRESS "docker tag backend-techfusion:$CI_COMMIT_SHORT_SHA $DOCKER_REG_URL/ecms/backend-techfusion:latest"
+          ssh $SSH_USER@$SSH_IPADDRESS "docker push $DOCKER_REG_URL/ecms/backend-techfusion:$CI_COMMIT_SHORT_SHA"
+          ssh $SSH_USER@$SSH_IPADDRESS "docker push $DOCKER_REG_URL/ecms/backend-techfusion:latest"
+          ;;
+        *)
+          echo "Invalid branch name"
+          exit 1
+          ;;
+      esac
+
+post:
+  stage: post
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SSH_IPADDRESS >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - |- 
+      case $CI_COMMIT_REF_SLUG in
+        develop)
+          echo "Nothing to do after"
+          ;;
+        prod)
+          echo "This is still work in progress"
+          ;;
+        master)
+          echo "This is still work in progress"
+          ;;
+        *)
+          echo "Invalid branch name"
+          exit 1
+          ;;
+      esac
+  artifacts:
+    paths:
+    - public
+

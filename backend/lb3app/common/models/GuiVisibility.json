@@ -1,0 +1,74 @@
+{
+  "name": "GuiVisibility",
+  "options": {
+    "idInjection": false,
+    "mysql": {
+      "schema": "ecms",
+      "table": "gui_visibility"
+    }
+  },
+  "scope": {
+    "include": [
+      "GuiPermission",
+      "GuiSection",
+      "DashRole"
+    ]
+  },
+  "properties": {
+    "id": {
+      "type": "Number",
+      "id": 1,
+      "required": false,
+      "length": null,
+      "precision": 10,
+      "scale": 0,
+      "mysql": {
+        "columnName": "id",
+        "dataType": "int",
+        "dataLength": null,
+        "dataPrecision": 10,
+        "dataScale": 0,
+        "nullable": "N"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "GuiPermission": {
+      "type": "belongsTo",
+      "model": "GuiPermission",
+      "foreignKey": "guipermissionId"
+    },
+    "GuiSection": {
+      "type": "belongsTo",
+      "model": "GuiSection",
+      "foreignKey": "guisectionId"
+    },
+    "DashRole": {
+      "type": "belongsTo",
+      "model": "DashRole",
+      "foreignKey": "roleId"
+    }
+  },
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "Administrator",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

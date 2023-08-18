@@ -1,0 +1,103 @@
+<h4 class="page_title">Manage Customers</h4>
+<div class="card">
+  <div class="grid">
+    <div class="col-12 md:col-5">
+      <div class="p-inputgroup">
+        <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue" [disabled]="isLoading" (keyup.enter)="onClickFilter()">
+        <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="isLoading ? '' : onClickFilter()"></button>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+<!--      <span class="p-buttonset mt-5">-->
+      <span class="mr-3" *ngIf="totalCount!=-1">Total <b>{{totalCount}}</b> Customer<span *ngIf="totalCount>1">s</span><em *ngIf="totalCount!=resultsLength && resultsLength!=-1"><br>{{resultsLength}} Customer<em *ngIf="resultsLength>1">s</em> Filtered</em></span>
+				<button pButton pRipple label="New Customer" *ngIf="permission==permissionTypeAll" routerLink="add"></button>
+<!--			</span>-->
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="customers" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngIf="permission==permissionTypeAll" style="width:56px"></th>
+        <th [ngClass]="sortActive === 'companyName' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('companyName')">Company Name</a>
+        </th>
+        <th class="hidden-xs" style="width: 42px;"></th>
+        <th class="col-md-hidden" [ngClass]="sortActive === 'companyId' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('companyId')">Company ID</a>
+        </th>
+        <th class="" [ngClass]="sortActive === 'firstName' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('firstName')">First Name</a>
+        </th>
+        <th class="" [ngClass]="sortActive === 'lastName' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('lastName')">Last Name</a>
+        </th>
+        <th class="col-sm-hidden" [ngClass]="sortActive === 'email' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('email')">Billing Email</a>
+        </th>
+        <th class="col-md-hidden" [ngClass]="sortActive === 'vatNumber' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('vatNumber')">Vat Number</a>
+        </th>
+        <th style="width: 72px;" [ngClass]="sortActive === 'enabled' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('enabled')">Verified</a>
+        </th>
+        <th *ngIf="isSuperAdmin" [ngClass]="sortActive === 'enabled' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('balance')">Balance</a>
+        </th>
+        <th class="" *ngIf="customers.length > 1 && permission==permissionTypeAll" style="width:36px"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-customer>
+      <tr>
+        <td class="" *ngIf="permission==permissionTypeAll">
+          <button pButton [routerLink]="['./edit/' + customer.id]" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+        <td class="">
+          <span class="p-column-title">Company Name</span>
+          {{ customer.companyName }}
+        </td>
+        <td class="hidden-xs">
+          <span class="p-column-title">&nbsp;</span>
+          <span class="mr-2 p-badge p-component p-badge-no-gutter p-badge-lg p-badge-info">{{ customer.companyName.substring(0,2).toUpperCase() }}</span>
+        </td>
+        <td class="col-md-hidden">
+          <span class="p-column-title">Company ID</span>
+          {{ customer.companyId }}
+        </td>
+        <td class=" ">
+          <span class="p-column-title">First Name</span>
+          {{ customer.firstName }}
+        </td>
+        <td class=" ">
+          <span class="p-column-title">Last Name</span>
+          {{ customer.lastName }}
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Billing Email</span>
+          {{customer.email}}
+        </td>
+        <td class="col-md-hidden">
+          <span class="p-column-title">Vat Number</span>
+          {{customer.vatNumber}}
+        </td>
+        <td class="">
+          <span class="p-column-title">Verified</span>
+          <div class="inline-block" *ngIf="customer.enabled"><span class="tag tag-success tag-size-md"><i class="pi pi-check"></i></span></div>
+          <div class="inline-block" *ngIf="!customer.enabled"><span class="tag tag-danger tag-size-md"><i class="pi pi-times"></i></span></div>
+        </td>
+        <td class="">
+          <span class="p-column-title">Balance</span>
+          ${{customer.balance}}
+        </td>
+        <td *ngIf="store.getUserType() == cmsUserType.superAdmin" class="">
+          <button pButton type="button" [routerLink]="['./delete', customer.id]" icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-paginator [rows]="pageSize" [totalRecords]="resultsLength" (onPageChange)="paginate($event)"></p-paginator>
+</div>

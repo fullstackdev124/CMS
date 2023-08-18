@@ -1,0 +1,121 @@
+<h4 class="page_title">Tracking Number Setup</h4>
+
+<div class="card">
+  <h5>Purchase Completed!</h5>
+  <h6>Numbers purchased: {{ this.countNumberPurchased!=-1 ? this.countNumberPurchased : '0' }} <span *ngIf="this.countNumberPurchased==0"> ( all numbers are released ) </span></h6>
+
+  <div class="grid">
+    <div class="col-12 text-right">
+      <button pButton pRipple class="mr-2" label="Buy More Numbers" *ngIf="permission==permissionTypeAll" routerLink="../../numberman"></button>
+      <button pButton pRipple class="p-button-warning" label="Skip Numbers Setup" (click)="isLoading ? '' : onSkip()" routerLink="../../tracking-number"></button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="numbers" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngIf="permission==permissionTypeAll" style="width: 70px;"></th>
+        <th [ngClass]="sortActive === 'tracking_number' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('tracking_number')">Tracking Number</a>
+        </th>
+        <th [ngClass]="sortActive === 'tracking_source' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('tracking_sourceId')">Tracking source</a>
+        </th>
+        <th class="col-md-hidden" *ngIf="store.getUserType() == cmsUserType.superAdmin" class="" [ngClass]="sortActive === 'customerId' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('customerId')">Customer</a></th>
+<!--        <th [ngClass]="sortActive === 'routing' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="">-->
+<!--          <a (click)="onSortChange('routing')">Routing</a></th>-->
+        <th class="" style="width:30%;">Action and Parameters</th>
+        <!--
+        <th class="">Call Setting</th>
+        <th class=""><a tooltip="Schedule" placement="bottom"><i class="fa fa-calendar"></i></a></th>
+        <th class=""><a tooltip="Notifications triggered for this number" placement="bottom"><i class="fa fa-envelope"></i></a></th>
+        <th class=""><a tooltip="Text messaging supported" placement="bottom"><i class="fa fa-phone"></i></a></th>
+        -->
+        <th class="col-md-hidden" *ngIf="permission == permissionTypeAll" style="width: 48px;">Active <i tooltipEvent="hover" tooltipPosition="top" pTooltip="Number can receive inbound phone calls" class="pi pi-question-circle"></i></th>
+        <th class="col-md-hidden" style="width: 56px;">Type</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-num>
+      <tr>
+        <td class="" *ngIf="permission==permissionTypeAll">
+          <button pButton routerLink="../edit/{{num.id}}" [queryParams]="{from:'setup'}" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+
+        <!-- tracking number -->
+        <td>
+          <span class="p-column-title">Tracking Number</span>
+          <h6>{{num.tracking_number && num.tracking_number | phoneFormat}}</h6>
+        </td>
+
+        <!-- tacking source -->
+        <td>
+          <span class="p-column-title">Tracking Source</span>
+          {{num.TrackingSources?.name}}
+        </td>
+
+        <!-- customer id -->
+        <td *ngIf="store.getUserType() == cmsUserType.superAdmin" class="col-md-hidden">
+          <span class="p-column-title">Customer</span>
+          <h6><a (click)="setFilter('companyId', num.Customer?.companyId)">{{num.Customer?.companyName}}</a></h6>
+        </td>
+
+        <!-- routing -->
+<!--        <td class="">-->
+<!--          <span class="p-column-title">Routing</span>-->
+<!--          <div *ngIf="num.SipGateways != null">-->
+<!--            <a class="routing-cell" [routerLink]="['../../routing/sipgateway/edit', num && num.SipGateways && num.SipGateways.id]">-->
+<!--              {{num?.SipGateways?.name}}-->
+<!--            </a>-->
+<!--          </div>-->
+<!--          <div *ngIf="num.SipGateways == null">-->
+<!--            <a class="routing-cell" routerLink="../edit/{{num.id}}" [queryParams]="{from:'setup'}">-->
+<!--              Complete Number Setup-->
+<!--            </a>-->
+<!--          </div>-->
+<!--        </td>-->
+
+        <!-- target numbers -->
+        <td class="">
+          <span class="p-column-title">Action and Parameters</span>
+          <div class="inline-block" *ngIf="(num.routing_action == null || num.routing_action == routingActionEnum.NotMapped.key) || (num.routing_action == routingActionEnum.RemapForwardTo.key && num.ReceivingNumber == null) ">
+            <a class="routing-cell" routerLink="../edit/{{num.id}}" [queryParams]="{from:'setup'}">
+              Complete Number Setup
+            </a>
+          </div>
+          <div class="inline-block" *ngIf="num.routing_action == routingActionEnum.ForwardTo.key">
+            Action: Forward
+          </div>
+          <div class="inline-block" *ngIf="num.routing_action == routingActionEnum.RemapForwardTo.key">
+            <a class="routing-cell" [routerLink]="['../../routing/receiving/edit', num && num.ReceivingNumber && num.ReceivingNumber.id]">
+            Action: Remap Forward To, Receiving Number: {{num?.ReceivingNumber?.number | phoneFormat}}
+            </a>
+          </div>
+          <div class="inline-block" *ngIf="num.routing_action == routingActionEnum.HangUp.key">
+            Action: Hang Up
+          </div>
+          <!--<div class="inline-block" *ngIf="num.routing_action == routingActionEnum.DialAgent.key">
+            Action: Dial Agent, Agent: {{num?.agent_name}}
+          </div>-->
+        </td>
+
+        <td class="col-md-hidden" *ngIf="permission == permissionTypeAll" >
+          <span class="p-column-title">Active</span>
+          <div class="inline-block" *ngIf="activeId !== num.id || !activeState">
+            <i class="pi pi-check"></i>
+          </div>
+        </td>
+
+        <td class="col-md-hidden">
+          <span class="p-column-title">Type</span>
+          <div class="inline-block">
+            {{num?.TrackingSources?.type}}<br>
+            <small style="opacity:0.5">Static</small>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

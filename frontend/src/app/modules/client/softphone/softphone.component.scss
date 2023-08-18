@@ -1,0 +1,31 @@
+// FIXME: Find a way to get attributes like this from the layout.
+$header-height: 5rem;
+
+$soft-phone-width: 25rem;
+$soft-phone-visible-edge-distance: 1rem;
+
+.softphone {
+    position: absolute;
+    top: $header-height;
+
+    display: block;
+    width: $soft-phone-width;
+    height: calc(100vh - 5rem);
+
+    padding: 0.5rem;
+
+    filter: drop-shadow(0px 3px 6px rgba(0,0,0,0.23));
+
+    right: -$soft-phone-width;
+    transition: right 250ms ease;
+
+    &--visible {
+        right: $soft-phone-visible-edge-distance;
+    }
+
+  z-index: 9999;
+}
+
+.ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front {
+    z-index: 1001 !important;
+}

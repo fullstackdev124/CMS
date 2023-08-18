@@ -1,0 +1,23 @@
+/var/log/opensips/acc/acc.log /var/log/opensips/acc/missed_calls.log  {
+        rotate 365
+        daily
+        missingok
+        extension .log
+        dateext
+        dateformat _%Y%m%d_%s
+        prerotate
+                /usr/local/bin/osipsexec flat_rotate > /dev/null 2>&1
+        endscript
+        postrotate
+                BASENAME=`/usr/bin/basename $1`
+                BASENAME=${BASENAME%.log}
+                BASEPATH=`/usr/bin/dirname $1`
+
+                for FILE in `ls $BASEPATH/$BASENAME*.log`; do
+                        NEWFILENAME=`/bin/hostname`"_"`/usr/bin/basename $FILE`
+                        /bin/mv $FILE $BASEPATH/$NEWFILENAME
+                done
+
+        endscript
+}
+

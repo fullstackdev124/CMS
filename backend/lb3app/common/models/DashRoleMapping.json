@@ -1,0 +1,57 @@
+{
+  "name": "DashRoleMapping",
+  "base": "RoleMapping",
+  "options": {
+    "mysql": {
+      "schema": "ecms",
+      "table": "RoleMapping"
+    },
+    "idInjection": false
+  },
+  "scope": {
+    "include": [
+      "DashRole",
+      "Customer"
+    ]
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "DashRole": {
+      "type": "belongsTo",
+      "model": "DashRole",
+      "foreignKey": "roleId"
+    },
+    "Customer": {
+      "type": "belongsTo",
+      "model": "Customer",
+      "foreignKey": "customerId"
+    },
+    "DashUser": {
+      "type": "belongsTo",
+      "model": "DashUser",
+      "foreignKey": "principalId"
+    }
+  },
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "Administrator",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

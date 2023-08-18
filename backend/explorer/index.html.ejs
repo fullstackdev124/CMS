@@ -1,0 +1,125 @@
+<!-- HTML for static distribution bundle build -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>
+    <%- indexTemplateTitle %>
+  </title>
+  <link rel="stylesheet" type="text/css" href="<%- swaggerThemeFile %>">
+  <link rel="icon" type="image/png" href="./favicon-32x32.png" sizes="32x32" />
+  <link rel="icon" type="image/png" href="./favicon-16x16.png" sizes="16x16" />
+  <style>
+    html {
+      box-sizing: border-box;
+      overflow: -moz-scrollbars-vertical;
+      overflow-y: scroll;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    body {
+      margin: 0;
+      background: #fafafa;
+    }
+
+    .label-token {
+      color: #3b4151;
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+
+    .swagger-ui .scheme-container {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div style="margin: 20px; text-align: center;">
+    <form id="api_selector">
+        <div class="input">
+            <div class="label-token">Global Access Token</div>
+            <input placeholder="Access Token" id="input_accessToken" name="accessToken" type="text">
+        </div>
+    </form>
+  </div>
+
+  <div id="swagger-ui"></div>
+
+  <script src="./swagger-ui-bundle.js"> </script>
+  <script src="./swagger-ui-standalone-preset.js"> </script>
+  <script>
+    window.onload = function () {
+
+      // Access Token Input form
+      const inpAuthorize = document.getElementById('input_accessToken');
+
+      // Set Access Token if already in session
+      let s_token = sessionStorage.getItem("jwt_token");
+      if(s_token && s_token.trim().length > 0) inpAuthorize.value = s_token;
+
+      // Update session access token
+      inpAuthorize.addEventListener('change', function(event) {
+        let u_token = event.target.value;
+        if(u_token && u_token.trim().length > 0)
+          sessionStorage.setItem("jwt_token", u_token);
+      });
+
+      // Build a system
+      const ui = SwaggerUIBundle({
+        url: '<%- openApiSpecUrl %>',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        filter: true,
+        docExpansion: 'none',
+        defaultModelsExpandDepth: 0,
+        defaultModelExpandDepth: 0,
+        persistAuthorization: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          // SwaggerUIStandalonePreset
+          SwaggerUIStandalonePreset.slice(1) // Disable the top bar
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: 'StandaloneLayout',
+        requestInterceptor: (request) => {
+          // Inject Session Access Token if set
+          let token = sessionStorage.getItem("jwt_token");
+          if(token && token.trim().length > 0) {
+            try {
+              // Inject at parameters level
+              let url = new URL(request.url);
+              url.searchParams.set("access_token", token);
+              request.url = url.href;
+
+              // Inject at headers level
+              request.headers["Authorization"] = "Bearer " + token;
+            } catch (_) { }
+          }
+          return request;
+        },
+        onComplete: () => {
+          // Retrieve Access Token, if set, when swagger ready
+          let token = sessionStorage.getItem("jwt_token");
+          if(token && token.trim().length > 0) {
+            ui.preauthorizeApiKey("jwt", "Bearer " + token);
+            ui.preauthorizeApiKey("jwtpw", "Bearer " + token);
+          }
+        },
+      })
+      window.ui = ui
+    }
+  </script>
+
+</body>
+
+</html>

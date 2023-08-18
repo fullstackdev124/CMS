@@ -1,0 +1,12 @@
+<h4 class="page_title">Release Tracking Number</h4>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <h4>Are you sure you want to release the tracking number <b>{{data?.tracking_number| phoneFormat}}</b>?</h4>
+  <div class="grid mt-3">
+    <div class="col-12 text-right">
+      <button pButton pRipple label="Cancel" class="p-button-danger mr-2" (click)="onBack()"></button>
+      <button pButton pRipple label="Release Tracking Number" (click)="onDeleteNumber()"></button>
+    </div>
+  </div>
+</div>

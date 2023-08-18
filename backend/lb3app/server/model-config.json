@@ -1,0 +1,244 @@
+{
+	"_meta": {
+		"sources": [
+			"loopback/common/models",
+			"loopback/server/models",
+			"../common/models",
+			"./models"
+		],
+		"mixins": [
+			"loopback/common/mixins",
+			"loopback/server/mixins",
+			"../common/mixins",
+			"./mixins"
+		]
+	},
+	"ACL": {
+		"dataSource": "db",
+		"public": false
+	},
+	"AccessToken": {
+		"dataSource": "db",
+		"public": false
+	},
+	"Addressee": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Attachment": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Bound": {
+		"dataSource": "db",
+		"public": true
+	},
+	"CallLog": {
+		"dataSource": "db",
+		"public": true
+	},
+	"CallLogSupport": {
+		"dataSource": "db",
+		"public": true
+	},
+	"CallRecording": {
+		"dataSource": "db",
+		"public": true
+	},
+	"BlacklistNumber": {
+		"dataSource": "db",
+		"public": true
+	},
+	"ContactType": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Country": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Customer": {
+		"dataSource": "db",
+		"public": true
+	},
+	"CustomerProductsRel": {
+		"dataSource": "db",
+		"public": true
+	},
+	"DashAccessToken": {
+		"dataSource": "db",
+		"public": false
+	},
+	"DashRole": {
+		"dataSource": "db",
+		"public": true
+	},
+	"DashRoleMapping": {
+		"dataSource": "db",
+		"public": true
+	},
+	"DashUser": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Document": {
+		"dataSource": "db",
+		"public": true
+	},
+	"DocumentType": {
+		"dataSource": "db",
+		"public": false
+	},
+	"Group": {
+		"dataSource": "db",
+		"public": true
+	},
+	"GroupMembership": {
+		"dataSource": "db",
+		"public": false
+	},
+	"GuiPermission": {
+		"dataSource": "db",
+		"public": true
+	},
+	"GuiSection": {
+		"dataSource": "db",
+		"public": true
+	},
+	"GuiVisibility": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Languages": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Lerg": {
+		"dataSource": "db",
+		"public": true
+	},
+	"LightCallLog": {
+		"dataSource": "db",
+		"public": true
+	},
+	"LightOpNumber": {
+		"dataSource": "db",
+		"public": true
+	},
+	"ModulesReload": {
+		"dataSource": "db",
+		"public": false
+	},
+	"Notification": {
+		"dataSource": "db",
+		"public": true
+	},
+	"NumberProvider": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Observer": {
+		"dataSource": "db",
+		"public": true
+	},
+	"OpNumber": {
+		"dataSource": "db",
+		"public": true
+	},
+	"PaymentMethod": {
+		"dataSource": "db",
+		"public": true
+	},
+	"PaymentTransaction": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Phonebook": {
+		"dataSource": "db",
+		"public": true
+	},
+	"PriceDiscount": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Product": {
+		"dataSource": "db",
+		"public": true
+	},
+	"ProductVariation": {
+		"dataSource": "db",
+		"public": true
+	},
+	"ReceivingNumber": {
+		"dataSource": "db",
+		"public": true
+	},
+	"RedisChannel": {
+		"dataSource": "db",
+		"public": true
+	},
+	"RedisSubchannel": {
+		"dataSource": "db",
+		"public": true
+	},
+	"RedisSubscription": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Role": {
+		"dataSource": "db",
+		"public": false
+	},
+	"RoleMapping": {
+		"dataSource": "db",
+		"public": false
+	},
+	"RoutingAction": {
+		"dataSource": "db",
+		"public": true
+	},
+	"SipGateways": {
+		"dataSource": "db",
+		"public": true
+	},
+	"State": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Subscription": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Ticket": {
+		"dataSource": "db",
+		"public": true
+	},
+	"TrackingSources": {
+		"dataSource": "db",
+		"public": true
+	},
+	"TsourcesPhonebookRel": {
+		"dataSource": "db",
+		"public": true
+	},
+	"User": {
+		"dataSource": "db",
+		"public": false
+	},
+	"UserContact": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Version": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Whitelist": {
+		"dataSource": "db",
+		"public": true
+	},
+	"Workflow": {
+		"dataSource": "db",
+		"public": true
+	}
+}

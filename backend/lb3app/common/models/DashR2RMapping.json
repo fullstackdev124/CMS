@@ -1,0 +1,46 @@
+{
+  "name": "DashR2RMapping",
+  "base": "RoleMapping",
+  "options": {
+    "mysql": {
+      "schema": "ecms",
+      "table": "RoleMapping_R2R"
+    },
+    "idInjection": false
+  },
+  "properties": {},
+  "validations": [],
+  "relations": {
+    "Child": {
+      "type": "belongsTo",
+      "model": "DashRole",
+      "foreignKey": "roleId"
+    },
+    "Parent": {
+      "type": "belongsTo",
+      "model": "DashRole",
+      "foreignKey": "principalId"
+    }
+  },
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "Administrator",
+      "permission": "ALLOW"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

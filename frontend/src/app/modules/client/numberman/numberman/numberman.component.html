@@ -1,0 +1,204 @@
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<h4 class="page_title">Buy Numbers</h4>
+  <div class="grid numberman-page">
+    <div class="col-12">
+      <div class="card">
+        <div class="grid mb-3">
+          <div class="col-12">
+            <button pButton label="Local" class="p-button-selected p-button-info {{selectedType=='local' ? 'p-button-danger' : ''}}" (click)="onTypeChange('local')"></button>
+            <button pButton label="Tollfree" class="p-button-selected p-button-info {{selectedType=='toll' ? 'p-button-danger' : ''}}" (click)="onTypeChange('toll')"></button>
+          </div>
+        </div>
+        <div class="grid p-fluid mb-3">
+          <div class="col-12 field md:col-3 sm:col-6 flex align-items-end justify-content-start">
+            <p-autoComplete class="p-component-full" [(ngModel)]="selectedCountry" *ngIf="selectedType == 'local'" [suggestions]="filteredCountries" (completeMethod)="filterCountry($event)" field="name" [dropdown]="true" placeholder="Select A State" [disabled]="isLoading" (onSelect)="onSelectedCountry($event)">
+              <ng-template let-country pTemplate="item">
+                <div class="flex justify-content-start flex-nowrap">
+<!--                    <img style="width: 16px;" src="assets/images/flags/{{country.code.toLowerCase()}}.svg" alt="" />-->
+                    <div>{{country.name}}</div>
+                </div>
+              </ng-template>
+            </p-autoComplete>
+
+            <p-autoComplete class="p-component-full" [(ngModel)]="selectedTollSuffix" *ngIf="selectedType == 'toll'" [suggestions]="filteredTollSuffixes" (completeMethod)="filterTollSuffixes($event)" field="suffix" [dropdown]="true" placeholder="Select a suffix"
+                            (onSelect)="onSelectTollSuffix($event)" readonly="true">
+              <ng-template let-toll pTemplate="item">
+                <div class="row clearfix">
+                  <div class="col-10">
+                    <div>{{toll.suffix}}</div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-autoComplete>
+          </div>
+          <div class="col-12 field md:col-3 sm:col-6 flex align-items-end justify-content-start">
+            <p-autoComplete class="p-component-full" [(ngModel)]="selectedRateCenter" *ngIf="selectedType == 'local'" [suggestions]="filteredRatecenters" (completeMethod)="filterRatecenter($event)" field="rate_center" [dropdown]="true" placeholder="Select A Rate Center"
+                            [disabled]="isLoading" (onSelect)="onSelectedRatecenter($event)">
+              <ng-template let-rc pTemplate="item">
+                <div class="row clearfix">
+                  <div class="col-10">
+                    <div>{{rc.rate_center}}</div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-autoComplete>
+
+            <p-autoComplete class="p-component-full" [(ngModel)]="selectedLookupFilter" *ngIf="selectedType == 'toll'" [suggestions]="lookupFilters" field="name" [dropdown]="true" [disabled]="isLoading"
+                            (completeMethod)="filterType($event)">
+              <ng-template let-type pTemplate="item">
+                <div class="row clearfix">
+                  <div class="col-10">
+                    <div>{{type.name}}</div>
+                  </div>
+                </div>
+              </ng-template>
+            </p-autoComplete>
+          </div>
+          <div class="col-12 field md:col-3 sm:col-6 flex align-items-end justify-content-start">
+            <span *ngIf="selectedType == 'local' || selectedType == 'toll'" class="p-input-icon-right">
+              <i class="pi pi-search"></i>
+              <input class="" type="text" pInputText (keypress)="onLookupKeypress($event)" (paste)="onLookupPaste($event)" placeholder="Number filter" [(ngModel)]="lookupNumber" [disabled]="isLoading"/>
+            </span>
+          </div>
+          <div class="col-12 field md:col-3 sm:col-6">
+            <span *ngIf="selectedType == 'local' || selectedType == 'toll'" class="p-input-icon-right">
+              Number of results:
+              <p-inputNumber [(ngModel)]="limit" mode="decimal" [showButtons]="true" inputId="minmax-buttons" [min]="10" [max]="50" [disabled]="isLoading"></p-inputNumber>
+            </span>
+          </div>
+        </div>
+        <div class="grid mt-2" *ngIf="selectedType == 'local' || selectedType == 'toll'">
+          <div class="col-12 text-right">
+            <p-fileUpload #uploader mode="basic" name="numbers[]" chooseLabel="Import" accept="text/csv" [customUpload]="true" (uploadHandler)="onImportNumbers($event, uploader)" [hidden]="store.getUserType() != cmsUserType.superAdmin" [disabled]="isLoading"></p-fileUpload>
+<!--            <i class="p-toolbar-separator pi pi-bars p-mr-2" style="vertical-align: middle" [hidden]="store.getUserType() != cmsUserType.superAdmin"></i>-->
+            <p-button label="Lookup" icon="pi pi-search" (click)="getProviderNumberList()" [disabled]="!lookupEnabled"></p-button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<div class="grid mt-3">
+  <div class="col-12 md:col-12 lg:col-6 mb-5">
+    <div class="card">
+      <div class="grid">
+        <div class="col-7">
+          <h5>Searched Numbers</h5>
+        </div>
+        <div class="col-5">
+        </div>
+      </div>
+      <p-table #snt [value]="numbers" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="true" [globalFilterFields]="['number']" [(selection)]="reservedNumbers" [rowHover]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+               [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+          <div class="text-right">
+            <span class="p-input-icon-left mb-2">
+               <i class="pi pi-search"></i>
+              <input type="search" pInputText (input)="snt.filterGlobal($event.target.value, 'contains')" placeholder="Filter ..." [disabled]="isLoading"/>
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Number</th>
+            <th>Monthly Fee</th>
+            <th style="width: 52px;">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-number>
+          <tr>
+            <td>
+              <span class="p-column-title">Number</span>
+              {{number.number | phoneFormat}}
+            </td>
+            <td *ngIf="number.type && number.type == 'local'">
+              <span class="p-column-title">Monthly Fee</span>
+              {{localdid | currency:'USD'}}
+            </td>
+            <td *ngIf="number.type && number.type == 'toll'">
+              <span class="p-column-title">Monthly Fee</span>
+              {{tollfree | currency:'USD'}}
+            </td>
+            <td>
+              <span class="p-column-title">Actions</span>
+              <button pButton pRipple icon="pi pi-plus" class="p-button-rounded" (click)="onNumberReserve(number)"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="flex align-items-center justify-content-center">
+            Total {{numbers ? numbers.length : 0 }} numbers
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+
+  <div class="col-12 md:col-12 lg:col-6 mb-5">
+    <div class="card">
+      <div class="grid">
+        <div class="col-7">
+          <h5>Reserved Numbers</h5>
+        </div>
+        <div class="col-5">
+
+        </div>
+      </div>
+      <p-table #tnt [value]="reservedNumbers" responsiveLayout="stack" responsive="true" [rows]="10" [paginator]="true" [(selection)]="selectedNumbers" [globalFilterFields]="['number']" [rowHover]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+               [showCurrentPageReport]="true">
+        <ng-template pTemplate="caption">
+          <!--<div class="d-flex flex-row justify-content-end">-->
+          <div class="flex justify-content-end align-items-baseline">
+              <span class="p-input-icon-right">
+                <i class="pi pi-search"></i>
+                <input type="search" pInputText (input)="tnt.filterGlobal($event.target.value, 'contains')" placeholder="Filter ..." [disabled]="isLoading"/>
+                  <!--<input type="search" class="form-control search-input" (input)="tnt.filterGlobal($event.target.value, 'contains')" placeholder="Filter ..."/>-->
+              </span>
+            <button pButton class="ml-2" label="Purchase" icon="pi pi-money-bill" (click)="confirmPurchase()" [disabled]="selectedNumbers.length <= 0 || isLoading"></button>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 3rem">
+              <p-tableHeaderCheckbox>Confirm</p-tableHeaderCheckbox>
+            </th>
+            <th>Number</th>
+            <th>Price</th>
+            <th style="width: 52px;">Actions</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-tnumber>
+          <tr>
+            <td>
+              <span class="p-column-title">Confirm</span>
+              <p-tableCheckbox [value]="tnumber"></p-tableCheckbox>
+            </td>
+            <td>
+              <span class="p-column-title">Number</span>
+              {{tnumber.number | phoneFormat}}
+            </td>
+            <td *ngIf="tnumber.type && tnumber.type == 'local'">
+              <span class="p-column-title">Price</span>
+              {{localdid | currency:'USD'}}
+            </td>
+            <td *ngIf="tnumber.type && tnumber.type == 'toll'">
+              <span class="p-column-title">Price</span>
+              {{tollfree | currency:'USD'}}
+            </td>
+            <td>
+              <span class="p-column-title">Actions</span>
+              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="onNumberRelease(tnumber)"></button>
+            </td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+          <div class="text-center">
+            {{reservedNumbers? reservedNumbers.length : 0 }} numbers reserved, {{selectedNumbers? selectedNumbers.length : 0 }} selected for purchase.
+          </div>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>
+
+<p-confirmDialog [style]="{width: '50vw'}" key="purchaseDialog" [baseZIndex]="10000"></p-confirmDialog>

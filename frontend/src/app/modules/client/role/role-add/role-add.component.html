@@ -1,0 +1,57 @@
+<h4 class="page_title">New Role</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" icon="pi pi-chevron-left" label="Back" routerLink="../"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="Role Detail">
+      <div class="p-fluid grid mt-5">
+        <div [ngClass]="hasCustomerPermission ? 'field col-12 md:col-4' : 'field col-12 md:col-6' ">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask1" name="name" (change)="handleChange('name',$event)"/>
+            <label for="inputmask1">Name</label>
+          </span>
+        </div>
+        <div [ngClass]="hasCustomerPermission ? 'field col-12 md:col-4' : 'field col-12 md:col-6' ">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask2" name="description" (change)="handleChange('description',$event)"/>
+            <label for="inputmask2">Description</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-4" *ngIf="hasCustomerPermission">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown11" [options]="customers" (onChange)="onChangeCustomer($event)" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+            <label for="dropdown11">Customer</label>
+          </span>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Assign Permission">
+      <div class="grid mt-5" *ngFor="let groupName of groupNames">
+        <h6>{{groupName}}</h6>
+        <div style="width:100%;" *ngFor="let item of guiData; let i=index">
+          <div class="grid" *ngIf="item.guiSection.groupName == groupName">
+            <div class="col-6 text-right">
+              <label>{{"Read " + item.guiSection.name}}</label>
+              <p-inputSwitch class="ml-2" [(ngModel)]="readable[i]" (onChange)="onPermissionChange(item.guiSection.id, permission_readable, $event.checked)"></p-inputSwitch>
+            </div>
+            <div class="col-6">
+              <p-inputSwitch class="mr-2" [(ngModel)]="writable[i]" (onChange)="onPermissionChange(item.guiSection.id, permission_writeable, $event.checked)" [disabled]="!item.readable"></p-inputSwitch>
+              <label>{{"Write " + item.guiSection.name}}</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+          <button pButton pRipple label="Check All" class="p-button-warning" (click)="onCheckAll()"></button>
+          <button pButton pRipple label="Uncheck All" class="p-button-info ml-2" (click)="onUncheckAll()"></button>
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Create Role" (click)="onCreate()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

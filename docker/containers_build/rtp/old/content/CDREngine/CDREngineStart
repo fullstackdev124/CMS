@@ -1,0 +1,39 @@
+#!/bin/sh
+#/usr/bin/perl -w CDREngine.pl
+
+PROCNAME="CDREngine"
+PROCPATH=`dirname $0`
+PERLBINARY=`which perl`
+
+if [ -z "$PERLBINARY" ]; then
+	echo "Perl binary not found, please install it!"
+	exit 0
+fi
+
+# Set Working PathName
+PWD=$PROCPATH
+cd $PWD
+
+# Begin Infinite Loop
+while :; do
+	# Starts MonkeY Voice Monitor
+	$PERLBINARY -w CDREngine.pl
+
+	# Get Exit status
+	EXITSTATUS=$?
+
+	DATE=`date`
+
+	if [ "$EXITSTATUS" = "0" ]; then
+		echo "[$DATE] Regular CDREngine Shut Down Issued!!"
+		exit 0;
+	elif [ $EXITSTATUS -eq 1 ]; then
+		echo "[$DATE] CDREngine Reload!!"
+	else
+		echo "[$DATE] CDREngine Died ($EXITSTATUS)!!"
+		exit 0
+	fi
+
+	# Wait for a sec
+	sleep 1;
+done

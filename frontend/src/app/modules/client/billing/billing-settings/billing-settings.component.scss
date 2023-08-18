@@ -1,0 +1,19 @@
+.description {
+  color: var(--text-color-secondary);
+}
+
+.tab_title {
+  padding-top: 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed;
+}
+
+:host ::ng-deep .p_dropdown_area .p-dropdown.p-component {
+  width: 250px !important;
+}
+
+
+.payment_method_edit_button {
+  width: 64px;
+  margin-top: 28px;
+}

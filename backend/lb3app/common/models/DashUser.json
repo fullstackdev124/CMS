@@ -1,0 +1,158 @@
+{
+  "name": "DashUser",
+  "base": "User",
+  "idInjection": true,
+  "mysql": {
+    "table": "User"
+  },
+  "scope": {
+    "include": [
+      "DashRoleMapping",
+      "Languages",
+      "Customer"
+    ]
+  },
+  "properties": {
+    "activated": {
+      "type": "number",
+      "required": true
+    },
+    "email": {
+      "type": "string",
+      "required": false
+    },
+    "note": {
+      "type": "string",
+      "required": false
+    },
+    "username": {
+      "type": "string",
+      "required": true
+    },
+    "firstName": {
+      "type": "string",
+      "required": false
+    },
+    "lastName": {
+      "type": "string",
+      "required": false
+    },
+    "primaryAdmin": {
+      "type": "number",
+      "required": false
+    },
+    "last_login": {
+      "type": "date",
+      "required": false
+    },
+    "timezone": {
+      "type": "string",
+      "required": false
+    },
+    "uiSettings": {
+      "type": "String",
+      "required": false,
+      "length": null,
+      "precision": null,
+      "scale": null,
+      "mysql": {
+        "columnName": "ui_settings",
+        "dataType": "json",
+        "dataLength": null,
+        "dataPrecision": null,
+        "dataScale": null,
+        "nullable": "Y"
+      }
+    }
+  },
+  "validations": [],
+  "relations": {
+    "DashTokens": {
+      "type": "hasMany",
+      "model": "DashAccessToken",
+      "foreignKey": "userId"
+    },
+    "UserContacts": {
+      "type": "hasMany",
+      "model": "UserContact",
+      "foreignKey": "userId"
+    },
+    "DashRoleMapping": {
+      "type": "hasMany",
+      "model": "DashRoleMapping",
+      "foreignKey": "principalId"
+    },
+    "Languages": {
+      "type": "belongsTo",
+      "model": "Languages",
+      "foreignKey": "languagesId"
+    },
+    "Addressees": {
+      "type": "hasMany",
+      "model": "Addressee",
+      "foreignKey": "userId"
+    },
+    "Groups": {
+      "type": "hasMany",
+      "model": "Group",
+      "foreignKey": "userId",
+      "through": "GroupMembership",
+      "keyThrough": "groupId"
+    },
+    "Observes": {
+      "type": "hasMany",
+      "model": "Version",
+      "foreignKey": "userId",
+      "through": "Observer",
+      "keyThrough": "versionId"
+    },
+    "Customer": {
+      "type": "belongsTo",
+      "model": "Customer",
+      "foreignKey": "customerId"
+    },
+    "Language": {
+      "type": "belongsTo",
+      "model": "Languages",
+      "foreignKey": "languagesId"
+    },
+    "OpNumber": {
+      "type": "belongsTo",
+      "model": "OpNumber",
+      "foreignKey": "tracking_numberId"
+    }
+  },
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "get_password"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "authenticate"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "register"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$authenticated",
+      "permission": "ALLOW",
+      "property": "*"
+    },
+    {
+      "accessType": "*",
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }
+  ],
+  "methods": {}
+}

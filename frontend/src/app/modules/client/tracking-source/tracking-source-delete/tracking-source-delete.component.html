@@ -1,0 +1,27 @@
+<h4 class="page_title">Release Tracking Source</h4>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <h4>Are you sure you want to release the tracking source <b>{{data?.name}}</b>?</h4>
+  <p *ngIf="trackingNumbers && trackingNumbers.length > 0">The following objects are currently using this Tracking Source:</p>
+
+  <p-table *ngIf="trackingNumbers && trackingNumbers.length > 0" [value]="trackingNumbers" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Tracking Numbers</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-item>
+      <tr>
+        <td>{{"1" + item.tracking_number | mask: '0 (000) 000-0000'}}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div class="grid mt-3">
+    <div class="col-12 text-right">
+      <button pButton pRipple label="Cancel" class="p-button-danger mr-2" (click)="onBack()"></button>
+      <button pButton pRipple label="Release Tracking Source" (click)="onDeleteSource()"></button>
+    </div>
+  </div>
+</div>

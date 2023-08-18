@@ -1,0 +1,12 @@
+/var/log/memcached.log {
+	daily
+	missingok
+	notifempty
+	compress
+	delaycompress
+	copytruncate
+	sharedscripts
+	postrotate
+		/bin/kill -HUP `cat /var/run/memcached.pid 2> /dev/null` 2> /dev/null || true
+	endscript
+}

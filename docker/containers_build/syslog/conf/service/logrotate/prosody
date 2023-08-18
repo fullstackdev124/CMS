@@ -1,0 +1,12 @@
+/var/log/prosody/prosody.log /var/log/prosody/prosody.err {
+	daily
+	rotate 14
+	compress
+	delaycompress
+	create 640 prosody adm
+	postrotate
+		/etc/init.d/prosody restart > /dev/null
+	endscript
+	sharedscripts
+	missingok
+}

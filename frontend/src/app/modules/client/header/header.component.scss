@@ -1,0 +1,99 @@
+.layout-topbar-logo img {
+  height: 50px;
+}
+
+.p-avatar {
+  display: flex;
+  background-color: transparent !important;
+
+  .p-avatar-text {
+    line-height: 16px;
+    padding-top: 2px;
+    padding-left: 4px;
+  }
+}
+.p-avatar.p-avatar-circle img {
+  border-radius: 50%;
+  overflow: hidden;
+  width: 3rem;
+}
+
+.layout-topbar-menu {
+  .p-button-icon {
+    margin-top: 4px;
+  }
+}
+
+.layout-topbar .layout-menu-button {
+  margin-left: 0px !important;
+  margin-right: 2rem !important;
+}
+
+.balance_widget {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  border-left: 1px dashed;
+  border-right: 1px dashed;
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+}
+
+.layout-topbar-account {
+  width: 100%;
+  padding: 1rem;
+  border-bottom: 1px dashed;
+
+  .title {
+    font-size: 15px;
+  }
+
+  .main_info {
+    padding-bottom: 0.5rem;
+
+    .p-badge {
+      font-size: 2rem;
+      min-width: 4rem;
+      height: 4rem;
+      line-height: 4rem;
+
+      margin-right: 1.6rem;
+      text-transform: uppercase;
+    }
+
+    .info {
+      line-height: 18px;
+    }
+
+    .value {
+      font-size: 12px;
+      color: var(--text-color-secondary);
+    }
+  }
+
+  .sub_info {
+    line-height: 18px;
+    padding: 0.5rem 0;
+
+    .label {
+      margin-right: 1rem;
+      font-size: 11px;
+      color: var(--text-color-secondary);
+    }
+
+    .value {
+
+    }
+  }
+}
+
+.softphone-button > span.pi-whatsapp {
+  font-size: 24px;
+  margin-top: -1px;
+  margin-left: -1px;
+}
+
+.p-menu.p-component.p-menu-overlay {
+  right: 28px !important;
+  top: 58px !important;
+  left: inherit !important;
+}

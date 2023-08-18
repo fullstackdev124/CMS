@@ -1,0 +1,39 @@
+<h4 class="page_title">Edit Tracking Source</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="General">
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask1" [(ngModel)]="selectedName" />
+            <label for="inputmask1">Name</label>
+          </span>
+          <p>The receiving number is dialed when a tracking number is called.</p>
+        </div>
+        <div class="field col-12 md:col-6" >
+          <span class="p-float-label" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+              <p-dropdown id="dropdown1" [(ngModel)]="selectedCustomer" [options]="customerList" (onChange)="source.customerId = $event.value.id" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+              <label for="dropdown1">Customer</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+              <textarea id="textarea" name="description" rows="3" style="resize: none;" cols="30" pInputTextarea [(ngModel)]="selectedDescription"></textarea>
+              <label for="textarea">Description</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+          <button pButton pRipple label="Release Tracking Source" class="p-button-danger" [routerLink]="['../../delete', source && source.id]"></button>
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save Changes" (click)="onClickSave()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

@@ -1,0 +1,14 @@
+<div class="grid">
+  <div class="col-12">
+    <p-calendar *ngIf="dateMode!=filterDate.month" [(ngModel)]="sDate" view="date" [disabled]="dateMode!=filterDate.range" [readonlyInput]="true" [showIcon]="true" dateFormat="yy-mm-dd"></p-calendar>
+    <span *ngIf="dateMode!=filterDate.month"> ~ </span>
+    <p-calendar *ngIf="dateMode!=filterDate.month" [(ngModel)]="eDate" view="date" [disabled]="dateMode!=filterDate.range" [readonlyInput]="true" [showIcon]="true" dateFormat="yy-mm-dd"></p-calendar>
+    <p-calendar *ngIf="dateMode==filterDate.month" [(ngModel)]="sMonth" view="month" [readonlyInput]="true" [showIcon]="true" dateFormat="yy-mm"></p-calendar>
+  </div>
+  <div class="col-12 flex justify-content-center justify-content-between  flex-wrap">
+    <button *ngFor="let item of dateButtonOptions" pButton style="width: 120px;" label="{{item.text}}" class="mt-1 ml-1 mr-1 mb-1 align-items-center" (click)="selectDate(item.value)"></button>
+  </div>
+  <div class="col-12 mt-5 text-right">
+    <button pButton pRipple label="Apply Filter" class="p-button-secondary" (click)="onFilter()"></button>
+  </div>
+</div>

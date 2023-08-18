@@ -1,0 +1,1 @@
+ALTER TABLE `payment_transaction` ADD COLUMN `invoice_details` JSON NULL AFTER `is_refunded`;

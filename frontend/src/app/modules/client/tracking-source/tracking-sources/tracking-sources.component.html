@@ -1,0 +1,89 @@
+<h4 class="page_title">Tracking Sources</h4>
+<div class="card">
+  <div class="grid">
+    <div class="col-12 md:col-2 p-fluid field" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+      <span class="p-float-label">
+          <p-dropdown id="dropdown1" [(ngModel)]="filteredCustomer" [options]="customerList" [autoDisplayFirst]="true" optionLabel="companyName"></p-dropdown>
+          <label for="dropdown1">Customer</label>
+      </span>
+    </div>
+    <div class="col-12 {{store.getUserType() == cmsUserType.superAdmin ? 'md:col-4' : 'md:col-6'}}">
+      <div class="p-inputgroup">
+        <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue" [disabled]="isLoading" (keyup.enter)="onClickFilter()" >
+        <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="isLoading ? '' : onClickFilter()"></button>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-6 text-right flex justify-content-end align-items-center">
+      <span class="mr-3" *ngIf="totalCount!=-1"><b>{{totalCount}}</b> Tracking Source<span *ngIf="totalCount>1">s</span><em *ngIf="totalCount!=resultsLength && resultsLength!=-1"><br>{{resultsLength}} Tracking Source<em *ngIf="resultsLength>1">s</em> Filtered</em></span>
+      <button pButton pRipple label="New Tracking Source" *ngIf="permission==permissionTypeAll" routerLink="add" style="height: 42px;"></button>
+      <button pButton pRipple label="Export" class="p-button-secondary ml-1" icon="pi pi-cloud-download" (click)="isLoading || isExporting ? '' : onExport($event) " style="height: 42px;"></button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="sources" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngIf="permission==permissionTypeAll" style="width: 56px;"></th>
+        <th [ngClass]="sortActive === 'name' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'"><a (click)="onSortChange('name')">Name</a></th>
+        <!--<th [ngClass]="sortActive === 'type' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'"><a (click)="onSortChange('type')">Type</a></th>-->
+        <!--<th [ngClass]="sortActive === 'position' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'"><a (click)="onSortChange('position')">Position</a></th>-->
+        <th class="col-sm-hidden">Numbers</th>
+        <th [ngClass]="sortActive === 'customerId' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'"><a (click)="onSortChange('customerId')">Customer</a></th>
+        <!--<th><input type="checkbox" class="ts-select"> Last Touch<i class="font-help"></i><a class="save-all">(save)</a></th>-->
+        <th>Tracking Number Counts</th>
+        <th  [ngClass]="sortActive === 'createdAt' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('createdAt')">Created Time</a>
+        </th>
+        <th  [ngClass]="sortActive === 'updatedAt' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('updatedAt')">Updated Time</a>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-source>
+      <tr>
+        <td class="align-center" *ngIf="permission==permissionTypeAll">
+          <button pButton routerLink="edit/{{source.id}}" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+        <td class="">
+          <span class="p-column-title">Name</span>
+          <div class="inline-block">
+            <a class="search" (click)="onClickItem(source.name || '')">{{source.name || ''}}</a><br>
+            <small class="desc col-sm-hidden">{{source.description || 'Description'}}</small>
+          </div>
+        </td>
+        <!--<td>-->
+        <!--<a class="search"-->
+        <!--(click)="onClickItem(source.type || '')">{{source.type || ''}}</a>-->
+        <!--&lt;!&ndash; {{source.type || ''}} &ndash;&gt;-->
+        <!--<br><small style="opacity:0.5">Dynamic</small>-->
+        <!--</td>-->
+        <!--<td class="text-center">{{source.position}}</td>-->
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Numbers</span>
+          Assigned
+        </td>
+        <td>
+          <span class="p-column-title">Customer</span>
+          {{source.hasOwnProperty('Customer') ? source?.Customer.companyName : '&nbsp;'}}
+        </td>
+        <td>
+          <span class="p-column-title">Tracking Number Counts</span>
+          {{source.tracking_numcount}}
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Created Time</span>
+          {{source.createdAt}}
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Updated Time</span>
+          {{source.updatedAt}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-paginator #paginator [rows]="pageSize" [totalRecords]="resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="paginate($event)"></p-paginator>
+</div>

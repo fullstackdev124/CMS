@@ -1,0 +1,198 @@
+<h4 class="page_title">Edit User</h4>
+<button pButton *ngIf="permission != permissionTypeDeny" class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="User Detail">
+      <h5 class="mt-5">User's Email Address And Name</h5>
+      <div class="p-fluid grid mt-2">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask1" [readOnly]="true" name="username" [(ngModel)]="selectedUserName"/>
+            <label for="inputmask1">Username</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask2" name="email" [(ngModel)]="selectedEmail" (change)="handleChange('email', $event)"/>
+            <label for="inputmask2">Email</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask3" name="firstName" [(ngModel)]="selectedFirstName" (change)="handleChange('firstName',$event)"/>
+            <label for="inputmask3">First Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask4" name="lastName" [(ngModel)]="selectedLastName" (change)="handleChange('lastName', $event)"/>
+            <label for="inputmask4">Last Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown1" [(ngModel)]="selectedTimezone"  [options]="tzs" [filter]="true" placeholder="Timezone not selected" (onChange)="onTimezoneChange($event)" [autoDisplayFirst]="false" optionLabel="text"></p-dropdown>
+            <label for="dropdown1">Timezone</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown2" [(ngModel)]="selectedLanguage" [options]="languages" placeholder="Language not selected" (onChange)="onLanguageChange($event)" [autoDisplayFirst]="false" optionLabel="name"></p-dropdown>
+            <label for="dropdown2">Language</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6" *ngIf="isAccountProfile">
+          <span class="p-float-label" >
+            <p-autoComplete id="inputtext" [(ngModel)]="selectedFailSafeNumber" [suggestions]="filterNumbers" (completeMethod)="filterTrackingNumber($event)" field="formatted_tracking_number" [dropdown]="true"></p-autoComplete>
+            <label for="inputtext">Default Outbound Number</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown5" [options]="timeFormats" placeholder="Date Format" [(ngModel)]="selectedDateFormat" [autoDisplayFirst]="false" optionLabel="label"></p-dropdown>
+            <label for="dropdown5">Date Format</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown7" [options]="weekendFormats" placeholder="Weekend Format" [(ngModel)]="selectedWeekendFormat" [autoDisplayFirst]="false" optionLabel="label"></p-dropdown>
+            <label for="dropdown7">Weekend Format</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Save Changes" (click)="onSaveDetail()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Authentication">
+      <h5 class="mt-5">Change the user's password, re-send the welcome email, or send password reset instructions</h5>
+      <p>
+        Force Password<br>
+        <small><i class="pi pi-lock"></i>This allows to force a specific password</small><br>
+        <small>In order to force a password, fill in "New Password", "New Password Repeat" inputs and click "Force New Password" button</small>
+      </p>
+      <p>
+        Reset Password<br>
+        <small><i class="pi pi-lock"></i>To reset your password, click the "Send Password Reset" button</small><br>
+        <small>In order to reset password, you must be logged out of your account prior to clicking the reset password link emailed to you.</small>
+      </p>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="password" pPassword id="inputmask11" [(ngModel)]="newPassword" />
+            <label for="inputmask11">New Password</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="password" pPassword id="inputmask12" [(ngModel)]="newPasswordRepeat" />
+            <label for="inputmask12">Confirm New Password</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Send Password Reset" class="mr-2 p-button-secondary"  (click)="onPasswordReset()"></button>
+          <button pButton pRipple label="Force New Password" (click)="onPasswordUpdate()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel [header]="store.getUserType() == cmsUserType.superAdmin ? 'Assign Role & Customer' : 'Assign Role'">
+      <h5 class="mt-5">Choose the role for this user</h5>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+          <span class="p-float-label" >
+            <p-dropdown id="dropdown11" [(ngModel)]="selectedCustomer" [options]="customers" (onChange)="onCustomerSelect($event.value.id)" [autoDisplayFirst]="false" optionLabel="companyName"></p-dropdown>
+            <label for="dropdown11">Customer</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-dropdown id="dropdown12" [(ngModel)]="selectedRole" placeholder="Role not selected" [options]="showRoles" (onChange)="onRoleChange($event.value.id)" [autoDisplayFirst]="false" optionLabel="name"></p-dropdown>
+            <label for="dropdown12">Role</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple *ngIf="user.id !== 1" label="Unassign" class="mr-2 p-button-secondary"  (click)="onUnassign()"></button>
+          <button pButton pRipple *ngIf="user.id !== 1" label="Apply" (click)="onAssign()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="UI Settings">
+      <div class="grid mt-5">
+        <div class="col-12 md:col-6">
+          <h5>Custom Logo Image</h5>
+          <div class="" style="padding: 10px;">
+            <img [src]="logoImg" [hidden]="logoImg == ''" height="50" />
+          </div>
+          <div class="justify-content-start">
+            <input #customLogo  (change)="onChangeCustomLogoImg($event)" type="file" id="customLogo" name="customLogo" accept="image/*" style="display: none"/>
+            <button pButton (click)="customLogo.click()" label="Choose" class="mr-2"></button>
+            <button pButton [hidden]="logoImg == ''" (click)="onClickRemoveLogo()" label="Remove" class="p-button-danger"></button>
+          </div>
+        </div>
+        <div class="col-12 md:col-6">
+          <h5>Custom Avatar</h5>
+          <div class="" style="padding: 10px;">
+            <img [src]="avatar" [hidden]="avatar == ''" width="50" height="50" />
+          </div>
+          <div class="justify-content-start">
+            <input #customAvatar (change)="onChangeAvatar($event)" type="file" id="customAvatar" name="customAvatar" accept="image/*" style="display:none;"/>
+            <button pButton (click)="customAvatar.click()" label="Choose" class="mr-2"></button>
+            <button pButton [hidden]="avatar == ''" (click)="onClickRemoveAvatar()" label="Remove" class="p-button-danger"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid mt-5">
+        <div class="col-12 md:col-6" *ngIf="false">
+          <h5>Menu Type</h5>
+          <p-dropdown [options]="menuTypes" [(ngModel)]="selectedMenuType" optionLabel="label"></p-dropdown>
+          <button pButton label="Preview" [disabled]="isMenuPreview" (click)="applyMenu()" class="p-button-info ml-2 vertical-align-middle"></button>
+        </div>
+        <div class="col-12 md:col-6 align-content-center">
+          <h5>Dark Theme</h5>
+          <p-dropdown [options]="darkThemes" [(ngModel)]="selectedDarkTheme" optionLabel="label"></p-dropdown>
+          <button pButton label="Preview" [disabled]="isThemePreview" (click)="applyTheme('dark')" class="p-button-info ml-2 vertical-align-middle"></button>
+        </div>
+        <div class="col-12 md:col-6 align-content-center">
+          <h5>Light Theme</h5>
+          <p-dropdown [options]="lightThemes" [(ngModel)]="selectedLightTheme" optionLabel="label"></p-dropdown>
+          <button pButton label="Preview" [disabled]="isThemePreview" (click)="applyTheme('light')" class="p-button-info ml-2 vertical-align-middle"></button>
+        </div>
+      </div>
+
+      <div class="grid mt-5">
+        <h5>Custom Quick Pages</h5>
+        <div class="col-12  quick-page-panel">
+          <div class="field-checkbox inline-block" *ngFor="let page of quickPages; let i = index">
+            <p-checkbox label="{{page.title}}" [(ngModel)]="page.isQuick" [binary]="true" name="quickpage" ></p-checkbox>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Apply" (click)="applySettings()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>

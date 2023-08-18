@@ -1,0 +1,40 @@
+export const FontStyleOpensans = 'font-opensans'
+export const FontStyleMontserrat = 'font-montserrat'
+export const FontStyleRoboto = 'font-roboto'
+
+export const FontSizeTiny = 'font-size-tiny'
+export const FontSizeSmall = 'font-size-small'
+export const FontSizeNormal = 'font-size-normal'
+export const FontSizeLarge = 'font-size-large'
+
+export const LineHeightTiny = 'line-height-tiny'
+export const LineHeightSmall = 'line-height-small'
+export const LineHeightNormal = 'line-height-normal'
+export const LineHeightLarge = 'line-height-large'
+
+export const LetterSpacingTiny = 'letter-spacing-tiny'
+export const LetterSpacingSmall = 'letter-spacing-small'
+export const LetterSpacingNormal = 'letter-spacing-normal'
+export const LetterSpacingLarge = 'letter-spacing-large'
+
+export const WordSpacingTiny = 'word-spacing-tiny'
+export const WordSpacingSmall = 'word-spacing-small'
+export const WordSpacingNormal = 'word-spacing-normal'
+export const WordSpacingLarge = 'word-spacing-large'
+
+export const SubMenuListA = 'list-a'
+export const SubMenuListB = 'list-b'
+export const SubMenuListC = 'list-c'
+
+export const DarkMode = 'dark-mode'
+export const TopDark = 'top_dark'
+export const MinSideBarDark = 'dark'
+export const SideBarDark = 'sidebar_dark'
+export const IconColor = 'iconcolor'
+export const Gradient = 'gradient'
+export const BoxShadow = 'box_shadow'
+export const RTLSupport = 'rtl'
+export const BoxLayout = 'boxlayout'
+
+export const FilterDropdown = 'filter_dropdown'
+export const FilterOptions = 'filter_options'

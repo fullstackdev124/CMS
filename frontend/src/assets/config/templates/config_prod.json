@@ -1,0 +1,22 @@
+{
+  "production": false,
+  "api": {
+    "core": {
+      "uri": "https://ecms.call-metrics.com:9443",
+      "path": "/api/v1"
+    },
+    "ws": {
+      "uri": "ws://ecms.call-metrics.com:8081"
+    }
+  },
+  "softphone": {
+    "scheme": "ws",
+    "server": "208.73.236.221",
+    "port": 6060,
+    "path": "/ws",
+    "sipDomain": "tenant_"
+  },
+  "stripe": {
+    "key": "pk_test_51LfINzFpiPklWkrVtqhZUhdonvVgrSpcPDbLaxNGOtzd2wpc1BoLvPUHUUk4Zk5NFpRLo0Ou7jVcXN2TSiI2FN8100zR9TY5Hl"
+  }
+}

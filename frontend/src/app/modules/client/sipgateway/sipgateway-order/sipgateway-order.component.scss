@@ -1,0 +1,20 @@
+.product-item {
+  display: block;
+  padding: .5rem;
+  width: 100%;
+
+  h6, p {
+  }
+
+  .label {
+    color: var(--text-color-secondary);
+    margin-right: 1rem;
+  }
+  .label:not(:first-child) {
+    margin-left: 1rem;
+  }
+
+  p {
+    color: var(--text-color-secondary)
+  }
+}

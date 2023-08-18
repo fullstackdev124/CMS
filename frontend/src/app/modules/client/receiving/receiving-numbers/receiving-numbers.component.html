@@ -1,0 +1,94 @@
+<h4 class="page_title">Receiving Numbers</h4>
+<div class="card">
+  <div class="grid">
+    <div class="col-12 md:col-2 p-fluid field" *ngIf="store.getUserType() == cmsUserType.superAdmin">
+      <span class="p-float-label">
+          <p-dropdown id="dropdown1" [(ngModel)]="filteredCustomer" [options]="customerList" [autoDisplayFirst]="true" optionLabel="companyName"></p-dropdown>
+          <label for="dropdown1">Customer</label>
+      </span>
+    </div>
+    <div class="col-12 {{store.getUserType() == cmsUserType.superAdmin ? 'md:col-4' : 'md:col-6'}}">
+      <div class="p-inputgroup">
+        <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue" [disabled]="isLoading" (keyup.enter)="onClickFilter()">
+        <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="isLoading ? '' : onClickFilter()"></button>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-6 text-right flex justify-content-end align-items-center">
+      <span class="mr-3" *ngIf="totalCount!=-1">Total <b>{{totalCount}}</b> Number<span *ngIf="totalCount>1">s</span><em *ngIf="totalCount!=resultsLength && resultsLength!=-1"><br>{{resultsLength}} Number<em *ngIf="resultsLength>1">s</em> Filtered</em></span>
+				<button pButton pRipple label="New Receiving Number" class="mr-1" *ngIf="permission==permissionTypeAll" routerLink="add"></button>
+				<button pButton pRipple label="Export" class="p-button-secondary" icon="pi pi-cloud-download" (click)="isLoading || isExporting ? '' : onExport($event) " *ngIf="receivingNumbers && receivingNumbers.length > 0"></button>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="receivingNumbers" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngIf="permission==permissionTypeAll" style="width: 56px;"></th>
+        <th [ngClass]="sortActive === 'number' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('number')">Receiving Number</a>
+        </th>
+        <th>Tracking Numbers</th>
+        <th  [ngClass]="sortActive === 'customerId' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('customerId')">Customer</a>
+        </th>
+        <th class="">
+          Total Calls <i pTooltip="Updated every 30 minutes" tooltipPosition="top" tooltipEvent="hover" class="pi pi-question-circle"></i>
+        </th>
+        <th  [ngClass]="sortActive === 'createdAt' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('createdAt')">Created Time</a>
+        </th>
+        <th  [ngClass]="sortActive === 'updatedAt' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'" class="col-sm-hidden">
+          <a (click)="onSortChange('updatedAt')">Updated Time</a>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-num>
+      <tr>
+        <td *ngIf="permission==permissionTypeAll" style="width:56px">
+          <button pButton routerLink="edit/{{num.id}}" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+        <td class="mobile-primary guide-receiving-numbers-receiving-numbers">
+          <span class="p-column-title">Receiving Numbers</span>
+          <div class="inline-block">
+            {{num.number | phoneFormat}}<br>
+            <small>{{num.description}}</small>
+          </div>
+        </td>
+        <td *ngIf="num.tracking_numbers.length > 3">
+          <span class="p-column-title">Tracking Numbers</span>
+          <a class="routing-cell" [routerLink]="['../../../tracking-number']" [queryParams]="{receiving_number: num.number}">
+            {{num.tracking_numbers.length}} Numbers
+          </a>
+        </td>
+        <td *ngIf="num.tracking_numbers.length <= 3">
+          <span class="p-column-title">Tracking Numbers</span>
+          <a *ngFor="let trackingNum of num.tracking_numbers" class="routing-cell" [routerLink]="['../../../tracking-number/edit', trackingNum.id]">
+            {{trackingNum.tracking_number | phoneFormat}}<br>
+          </a>
+        </td>
+        <!-- customer id -->
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Customer</span>
+          <h6>{{num.hasOwnProperty('Customer') ? num?.Customer?.companyName : ''}}</h6>
+        </td>
+        <td class="">
+          <span class="p-column-title">Total Calls</span>
+          <b>{{num.total_calls}}</b>&nbsp; received
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Created Time</span>
+          {{num.createdAt}}
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Updated Time</span>
+          {{num.updatedAt}}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-paginator #paginator [rows]="pageSize" [totalRecords]="resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="paginate($event)"></p-paginator>
+</div>

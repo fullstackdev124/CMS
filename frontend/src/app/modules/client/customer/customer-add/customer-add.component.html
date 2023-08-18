@@ -1,0 +1,113 @@
+<h4 class="page_title">New Customer</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="Company">
+      <h5 class="mt-5">Company Information</h5>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask1" name="companyName" (change)="handleChange($event)"/>
+            <label for="inputmask1">Company Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask2" name="companyId" (change)="handleChange($event)"/>
+            <label for="inputmask2">Company ID</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask3" name="email" (change)="handleChange($event)"/>
+            <label for="inputmask3">Billing Email</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask41" name="address" (change)="handleChange($event)"/>
+            <label for="inputmask41">Address</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask31" name="city"  (change)="handleChange($event)"/>
+            <label for="inputmask31">City</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask42" name="state" (change)="handleChange($event)"/>
+            <label for="inputmask42">State</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask44" name="country" (change)="handleChange($event)"/>
+            <label for="inputmask44">Country</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask32" name="zip" (change)="handleChange($event)"/>
+            <label for="inputmask32">Zip</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <p-inputMask id="inputmask43" name="phone" mask="9 (999) 999-9999" (change)="handleChange($event)"></p-inputMask>
+            <label for="inputmask43">Phone</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask33" name="vatNumber" (change)="handleChange($event)"/>
+            <label for="inputmask33">EIN / SSN Number</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Create New Customer" (click)="createCustomer()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Contact">
+      <h5 class="mt-5">Contact Information</h5>
+      <div class="p-fluid grid">
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask35" name="firstName" (change)="handleChange($event)"/>
+            <label for="inputmask35">First Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="text" pInputText id="inputmask45" name="lastName" (change)="handleChange($event)"/>
+            <label for="inputmask45">Last Name</label>
+          </span>
+        </div>
+        <div class="field col-12 md:col-6">
+          <span class="p-float-label">
+            <input type="email" pInputText id="inputmask25" name="emailaccount" (change)="handleChange($event)"/>
+            <label for="inputmask25">Email</label>
+          </span>
+        </div>
+      </div>
+      <div class="grid mt-5">
+        <div class="col-6">
+        </div>
+        <div class="col-6 text-right">
+          <button pButton pRipple label="Create New Customer" (click)="createCustomer()"></button>
+        </div>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+</div>
+
+<p-confirmDialog [style]="{width: '50vw'}" key="confirmDialog" [baseZIndex]="10000"></p-confirmDialog>

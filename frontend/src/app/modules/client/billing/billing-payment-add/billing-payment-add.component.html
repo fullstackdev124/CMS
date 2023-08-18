@@ -1,0 +1,64 @@
+<h4 class="page_title">Add Credit Card</h4>
+<button pButton class="p-button-secondary p-button-rounded p-button-text p-button-back" routerLink="../../settings" [queryParams]="{ from: goingFrom }" icon="pi pi-chevron-left" label="Back"></button>
+<p-blockUI [blocked]="blockContent"></p-blockUI>
+
+<div class="card">
+  <form [formGroup]="cardForm" (ngSubmit)="onSubmit(cardForm.value)">
+  <div class="grid p-fluid">
+    <div class="col-12 md:col-4">
+      <div class="field">
+        <p>Card First Name</p>
+        <input class="p-component-full" formControlName="firstname" type="text" pInputText class="{{isFieldValid('firstname') ? 'ng-invalid ng-dirty' : ''}}" >
+        <p class="p-error" *ngIf="isFieldValid('firstname')">Please enter first name.</p>
+      </div>
+    </div>
+    <div class="col-12 md:col-4">
+      <div class="field">
+        <p>Card Last Name</p>
+        <input class="p-component-full" formControlName="lastname" type="text" pInputText class="{{isFieldValid('lastname') ? 'ng-invalid ng-dirty' : ''}}">
+        <p class="p-error" *ngIf="isFieldValid('lastname')">Please enter last name.</p>
+      </div>
+    </div>
+    <div class="col-12 md:col-4"></div>
+    <div class="col-12 md:col-8">
+      <ngx-stripe-card
+        (change)="onCardChange($event)"
+        [options]="cardOptions"
+        [elementsOptions]="elementsOptions"
+      ></ngx-stripe-card>
+      <p *ngIf="cardErrorMessage!=''" class="p-error">{{cardErrorMessage}}</p>
+    </div>
+    <div class="col-12 md:col-4"></div>
+
+    <div class="col-12 md:col-8">
+      <div class="field">
+        <p>Country</p>
+        <p-dropdown class="p-component-full" formControlName="country" [options]="countries" [(ngModel)]="selectedCountry" optionLabel="label" [filter]="true" filterBy="label">
+          <ng-template pTemplate="selectedItem">
+            <div class="country-item country-item-value flex justify-content-start align-items-center" *ngIf="selectedCountry">
+              <img [src]="selectedCountry.value ? 'assets/images/flags/' + selectedCountry.value + '.svg' : '' "  style="width: 24px;" alt=""/>
+              <div class="ml-1">{{selectedCountry?.label}}</div>
+            </div>
+          </ng-template>
+          <ng-template let-country pTemplate="item">
+            <div class="country-item flex justify-content-start align-items-center">
+              <img [src]="country.value ? 'assets/images/flags/' + country.value.value + '.svg' : '' "  style="width: 24px;" alt=""/>
+              <div class="ml-1">{{country?.value.label}}</div>
+            </div>
+          </ng-template>
+        </p-dropdown>
+      </div>
+    </div>
+    <div class="col-12 md:col-4"></div>
+
+  </div>
+
+  <div class="grid">
+    <div class="col-6">
+    </div>
+    <div class="col-6 text-right">
+      <button pButton pRipple type="submit" label="Save Card"></button>
+    </div>
+  </div>
+  </form>
+</div>

@@ -1,0 +1,16 @@
+[mysqld]
+server-id               = {{DB_SERVERID}}
+log_bin                 = /var/log/mysql/mysql-bin.log
+binlog_do_db            = coresip
+replicate-do-db         = coresip
+replicate-ignore-table  = coresip.access_log
+replicate-ignore-table  = coresip.all_location
+replicate-ignore-table  = coresip.cdrs
+replicate-ignore-table  = coresip.monitored_stats
+replicate-ignore-table  = coresip.monitoring_stats
+replicate-ignore-table  = coresip.pua
+replicate-ignore-table  = coresip.rls_presentity
+replicate-ignore-table  = coresip.rls_watchers
+replicate-ignore-table  = coresip.sip_trace
+replicate-ignore-table  = coresip.xcap
+replicate-ignore-table  = coresip.domain_limit

@@ -1,0 +1,75 @@
+<h4 class="page_title">Manage Roles</h4>
+
+<div class="card">
+  <div class="grid">
+    <div class="col-12 md:col-5">
+      <div class="p-inputgroup">
+        <input type="text" pInputText placeholder="Keyword..." [(ngModel)]="filterValue" [disabled]="isLoading" (keyup.enter)="onClickFilter()" (keyup.enter)="onClickFilter()">
+        <button type="button" pButton pRipple label="Search" icon="pi pi-search" (click)="isLoading ? '' : onClickFilter()" ></button>
+      </div>
+    </div>
+
+    <div class="col-12 md:col-7 text-right flex justify-content-end align-items-center">
+<!--      <span class="p-buttonset mt-5">-->
+      <span class="mr-3" *ngIf="totalCount!=-1">Total <b>{{totalCount}}</b> Role<span *ngIf="totalCount>1">s</span><em *ngIf="totalCount!=resultsLength && resultsLength!=-1"><br>{{resultsLength}} Role<em *ngIf="resultsLength>1">s</em> Filtered</em></span>
+				<button pButton pRipple label="New Role" *ngIf="permission==permissionTypeAll" routerLink="add"></button>
+<!--			</span>-->
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p-table [value]="roles" responsiveLayout="stack" responsive="true">
+    <ng-template pTemplate="header">
+      <tr>
+        <th *ngIf="permission==permissionTypeAll && !noNeedEditColumn" style="width:56px"></th>
+        <th [ngClass]="sortActive === 'name' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('name')">Name</a>
+        </th>
+        <th class="" [ngClass]="sortActive === 'description' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('description')">Description</a>
+        </th>
+        <th class="col-sm-hidden" [ngClass]="sortActive === 'created' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('created')">Created At</a>
+        </th>
+        <th class="col-sm-hidden" [ngClass]="sortActive === 'modified' ? 'sorting_' + sortDirection.toLowerCase() :'sorting'">
+          <a (click)="onSortChange('modified')">Modified At</a>
+        </th>
+        <!-- <th>Users</th> -->
+        <th class="" *ngIf="permission==permissionTypeAll && !noNeedEditColumn" style="width: 32px;"></th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-role>
+      <tr>
+        <td class="" *ngIf="permission==permissionTypeAll && !noNeedEditColumn">
+          <button pButton routerLink="edit/{{role.id}}" icon="pi pi-pencil" class="p-button-rounded p-button-outlined"></button>
+        </td>
+        <td>
+          <span class="p-column-title">Name</span>
+          {{ role.name }}
+        </td>
+        <td>
+          <span class="p-column-title">Description</span>
+          <small>{{ role.description }}</small>
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Created At</span>
+          {{role.created}}
+        </td>
+        <td class="col-sm-hidden">
+          <span class="p-column-title">Modified At</span>
+          {{role.modified}}
+        </td>
+        <!-- <td>
+<div *ngFor="let user of role.users">{{user.username}}</div>
+</td> -->
+        <td class=" " *ngIf="permission==permissionTypeAll && !noNeedEditColumn">
+          <!-- Admin user can't be removed -->
+          <button pButton type="button" [routerLink]="['delete', role.id]" icon="pi pi-trash" class="p-button-rounded p-button-outlined p-button-danger"></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-paginator [rows]="pageSize" [totalRecords]="resultsLength" [rowsPerPageOptions]="[10, 20, 30, 50, 100]" (onPageChange)="paginate($event)"></p-paginator>
+</div>

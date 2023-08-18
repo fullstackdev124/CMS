@@ -1,0 +1,483 @@
+version: "2.3"
+volumes:
+  db-volume:
+  log-volume:
+  run-volume:
+  tmp-volume:
+  redis-volume:
+services:
+  db-techfusion:
+    container_name: db_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/db/
+      args:
+        APT_PROXY: ${APT_PROXY}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        DB_REPL_USER: ${DB_REPL_USER}
+        DB_REPL_PASS: ${DB_REPL_PASS}
+        HOST_IP: ${HOST_IP}
+        DB_HOST: ${DB_HOST}
+        DB_PORT: ${DB_PORT}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        DB_NAME: ${DB_NAME}
+    image: db-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - DB_ROOT_PASS=${DB_ROOT_PASS}
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASS}
+      - DB_REPL_USER=${DB_REPL_USER}
+      - DB_REPL_PASS=${DB_REPL_PASS}
+      - HOST_IP=${HOST_IP}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    healthcheck:
+      test: ["CMD", "mysqladmin", "--user=$DB_USER", "--password=$DB_PASS", "--host=$DB_HOST", "--port=$DB_PORT", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    volumes:
+      - db-volume:/var/lib/mysql
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    network_mode: "bridge"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "db"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - '${DB_PORT}:${DB_PORT}'
+  syslog-techfusion:
+    container_name: syslog_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build: 
+      context: ./containers_build/syslog
+      args:
+        APT_PROXY: ${APT_PROXY}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+    image: syslog-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    network_mode: "bridge"
+    ports:
+      - '${SYLOG_UDP_PORT}:514'
+      - '${SYLOG_CNN_PORT}:601'
+      - '${SYLOG_TLS_PORT}:6514'
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
+  memc-techfusion:
+    container_name: memc_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/memcached/
+      args:
+        APT_PROXY: ${APT_PROXY}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        MEMC_MEM: ${MEMC_MEM}
+        MEMC_HOST: ${MEMC_HOST}
+        MEMC_PORT: ${MEMC_PORT}
+    image: memc-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - MEMC_MEM=${MEMC_MEM}
+      - MEMC_HOST=${MEMC_HOST}
+      - MEMC_PORT=${MEMC_PORT}
+    healthcheck:
+      test: ["CMD", "/usr/bin/nc", "-z", "$MEMC_HOST", "$MEMC_PORT"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    network_mode: "bridge"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "memcached"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - '${MEMC_PORT}:${MEMC_PORT}'
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
+  rtp-techfusion:
+    container_name: rtp_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/rtp/
+      args:
+        APT_PROXY: ${APT_PROXY}
+        TELCO_HTTP_PORT: ${TELCO_HTTP_PORT}
+        RTPPROXY_CTRL_PORT: ${RTPPROXY_CTRL_PORT}
+        ADVERTISED_RANGE_LAST: ${RTP_RANGE_END}
+        ADVERTISED_RANGE_FIRST: ${RTP_RANGE_START}
+        ADVERTISED_SIP_UDP_PORT: ${SBC_SIP_PORT}
+        ADVERTISED_SIP_TCP_PORT: ${SBC_SIP_PORT}
+        ADVERTISED_SIP_TLS_PORT: ${SBC_TLS_PORT}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        ADVERTISED_IP: ${EXTERNAL_IP}
+        HOST_IP: ${HOST_IP}
+        DB_HOST: ${DB_HOST}
+        DB_PORT: ${DB_PORT}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        DB_NAME: ${DB_NAME}
+    image: rtp-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - TELCO_HTTP_PORT=${TELCO_HTTP_PORT}
+      - RTPPROXY_CTRL_PORT=${RTPPROXY_CTRL_PORT}
+      - ADVERTISED_RANGE_FIRST=${RTP_RANGE_START}
+      - ADVERTISED_RANGE_LAST=${RTP_RANGE_END}
+      - ADVERTISED_SIP_UDP_PORT=${SBC_SIP_PORT}
+      - ADVERTISED_SIP_TCP_PORT=${SBC_SIP_PORT}
+      - ADVERTISED_SIP_TLS_PORT=${SBC_TLS_PORT}
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - ADVERTISED_IP=${EXTERNAL_IP}
+      - HOST_IP=${HOST_IP}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+    healthcheck:
+      test: ["CMD", "/bin/nc", "-z", "127.0.0.1", "10080"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
+    network_mode: "host"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "rtp"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - "${RTPPROXY_CTRL_PORT}:${RTPPROXY_CTRL_PORT}/udp"
+      - "${RTP_RANGE_START}-${RTP_RANGE_END}:${RTP_RANGE_START}-${RTP_RANGE_END}/udp"
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
+  sbc-techfusion:
+    container_name: sbc_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/sbc/
+      args:
+        APT_PROXY: ${APT_PROXY}
+        ADVERTISED_RANGE_FIRST: ${RTP_RANGE_START}
+        ADVERTISED_RANGE_LAST: ${RTP_RANGE_END}
+        ADVERTISED_SIP_UDP_PORT: ${SBC_SIP_PORT}
+        ADVERTISED_SIP_TCP_PORT: ${SBC_SIP_PORT}
+        ADVERTISED_SIP_TLS_PORT: ${SBC_TLS_PORT}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        ADVERTISED_IP: ${EXTERNAL_IP}
+        DB_ROOT_PASS: ${DB_ROOT_PASS}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        DB_NAME: ${DB_NAME}
+        DB_PORT: ${DB_PORT}
+        DB_HOST: ${DB_HOST}
+        HOST_IP: ${HOST_IP}
+        TELCO_ENDPOINT: ${TELCO_ENDPOINT}
+    image: sbc-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - ADVERTISED_RANGE_FIRST=${RTP_RANGE_START}
+      - ADVERTISED_RANGE_LAST=${RTP_RANGE_END}
+      - ADVERTISED_SIP_UDP_PORT=${SBC_SIP_PORT}
+      - ADVERTISED_SIP_TCP_PORT=${SBC_SIP_PORT}
+      - ADVERTISED_SIP_TLS_PORT=${SBC_TLS_PORT}
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - ADVERTISED_IP=${EXTERNAL_IP}
+      - DB_ROOT_PASS=${DB_ROOT_PASS}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_PORT=${DB_PORT}
+      - DB_HOST=${DB_HOST}
+      - HOST_IP=${HOST_IP}
+      - TELCO_ENDPOINT=${TELCO_ENDPOINT}
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/osipsexec", "stats"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    ulimits:
+      nofile:
+        soft: 64000
+        hard: 64000
+    network_mode: "host"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "sbc"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - "${SBC_SIP_PORT}:${SBC_SIP_PORT}/udp"
+      - "${SBC_SIP_PORT}:${SBC_SIP_PORT}/tcp"
+      - "${SBC_TLS_PORT}:${SBC_TLS_PORT}/tcp"
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
+      rtp-techfusion:
+        condition: service_healthy
+      backend-techfusion:
+        condition: service_healthy
+  redis-techfusion:
+    container_name: redis_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/redis/
+      args:
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        HOST_IP: ${HOST_IP}
+        DB_HOST: ${DB_HOST}
+        REDIS_PORT: ${REDIS_PORT}
+        REDIS_PASS: ${REDIS_PASS}
+    image: redis-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - HOST_IP=${HOST_IP}
+      - DB_HOST=${DB_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASS=${REDIS_PASS}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - redis-volume:/data
+      - tmp-volume:/tmp
+    network_mode: "bridge"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "redis"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+  backend-techfusion:
+    container_name: backend_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/backend/
+      args:
+        HOST_IP: ${HOST_IP}
+        DB_HOST: ${HOST_IP}
+        DB_PORT: ${DB_PORT}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        DB_NAME: ${DB_NAME}
+        REDIS_PORT: ${REDIS_PORT}
+        REDIS_PASS: ${REDIS_PASS}
+        HADOOP_PORT: ${HADOOP_PORT}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        TELCO_HTTP_PORT: ${TELCO_HTTP_PORT}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        BACKEND_HTTPS_PORT: ${BACKEND_HTTPS_PORT}
+    image: backend-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - HOST_IP=${HOST_IP}
+      - DB_HOST=${HOST_IP}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASS=${REDIS_PASS}
+      - HADOOP_PORT=${HADOOP_PORT}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - TELCO_HTTP_PORT=${TELCO_HTTP_PORT}
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - BACKEND_HTTPS_PORT=${BACKEND_HTTPS_PORT}
+    healthcheck:
+      test: ["CMD", "bash", "-c", "printf 'GET / HTTP/1.1\n\n' > /dev/tcp/$HOST_IP/$TELCO_HTTP_PORT"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    network_mode: "bridge"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "backend"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - '${TELCO_HTTP_PORT}:3003'
+      - '${BACKEND_HTTPS_PORT}:${BACKEND_HTTPS_PORT}'
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
+      frontend-techfusion:
+        condition: service_healthy
+  frontend-techfusion:
+    container_name: frontend_techfusion
+    hostname: voip.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/frontend/
+      args:
+        HOST_IP: ${HOST_IP}
+        HOST_FQDN: ${HOST_FQDN}
+        LETS_EMAIL: ${LETS_EMAIL}
+        LETS_DOMAIN: ${LETS_DOMAIN}
+        INSTANCE_NAME: ${INSTANCE_NAME}
+        INSTANCE_DOMAIN: ${INSTANCE_DOMAIN}
+        BACKEND_HTTPS_PORT: ${BACKEND_HTTPS_PORT}
+        FRONTEND_HTTP_PORT: ${FRONTEND_HTTP_PORT}
+    image: frontend-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - HOST_IP=${HOST_IP}
+      - HOST_FQDN=${HOST_FQDN}
+      - LETS_EMAIL=${LETS_EMAIL}
+      - LETS_DOMAIN=${LETS_DOMAIN}
+      - INSTANCE_NAME=${INSTANCE_NAME}
+      - INSTANCE_DOMAIN=${INSTANCE_DOMAIN}
+      - BACKEND_HTTPS_PORT=${BACKEND_HTTPS_PORT}
+      - FRONTEND_HTTP_PORT=${FRONTEND_HTTP_PORT}
+      - FRONTEND_HTTPS_PORT=${FRONTEND_HTTPS_PORT}
+    healthcheck:
+      test: ["CMD", "/usr/bin/nc", "-z", "$HOST_IP", "$FRONTEND_HTTPS_PORT"]
+      #test: ["CMD", "bash", "-c", "printf 'GET / HTTP/1.1\n\n' > /dev/tcp/$HOST_IP/$FRONTEND_HTTP_PORT"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    network_mode: "bridge"
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://127.0.0.1:514"
+        syslog-format: "rfc3164"
+        tag: "frontend"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      #- '${FRONTEND_HTTP_PORT}:80'
+      - '${FRONTEND_HTTPS_PORT}:443'
+    mem_limit: 4096m
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
+  hadoop-techfusion:
+    container_name: hadoop_techfusion
+    hostname: hadoop.${INSTANCE_DOMAIN}
+    build:
+      context: ./containers_build/hadoop/
+      args:
+        HOST_IP: ${HOST_IP}
+        DB_PORT: ${DB_PORT}
+        DB_USER: ${DB_USER}
+        DB_PASS: ${DB_PASS}
+        REDIS_PORT: ${REDIS_PORT}
+        REDIS_PASS: ${REDIS_PASS}
+        HADOOP_PORT: ${HADOOP_PORT}
+    image: hadoop-techfusion:${APP_VER}.0
+    privileged: true
+    restart: always
+    environment:
+      - HOST_IP=${HOST_IP}
+      - DB_PORT=${DB_PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASS=${REDIS_PASS}
+      - HADOOP_PORT=${HADOOP_PORT}
+    healthcheck:
+      test: ["CMD", "bash", "-c", "printf 'GET / HTTP/1.1\n\n' > /dev/tcp/$HOST_IP/8098"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    volumes:
+      - log-volume:/var/log
+      - run-volume:/var/run
+      - tmp-volume:/tmp
+    network_mode: "host"
+    dns: ${DNS_HOST}
+    domainname: ${INSTANCE_DOMAIN}
+    ports:
+      - '2181:2181'
+      - '${HADOOP_PORT}:8098'
+    depends_on:
+      db-techfusion:
+        condition: service_healthy
